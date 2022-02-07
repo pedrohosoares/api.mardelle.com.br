@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\MoneyController;
+use App\Http\Controllers\Api\OrderController as ApiOrderController;
 use App\Http\Controllers\Dashboard\DashBoardController;
 use App\Http\Controllers\Dashboard\SaleController as DashboardSaleController;
 use App\Http\Controllers\Tray\CustomerController;
@@ -23,6 +25,12 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::post('/request',[NotificationController::class,'save']);
+
+Route::prefix('api')->group(function(){
+    Route::get('total',[MoneyController::class,'total']);
+    Route::get('total_mounth',[MoneyController::class,'totalMounth']);
+    Route::get('order_by_status',[ApiOrderController::class,'orderByStatus']);
+});
 
 Route::prefix('tray')->group(function () {
 

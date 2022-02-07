@@ -21,11 +21,6 @@ class Traycustomer extends Model
         'state',
     ];
 
-    protected static function booted()
-    {
-        //static::addGlobalScope(new TrayCustomerScope);
-    }
-
     public function trayaddres(): HasMany
     {
         return $this->hasMany(Trayaddres::class, 'customer_id', 'customer_id');
@@ -41,19 +36,18 @@ class Traycustomer extends Model
         array $zipCodes,
         string $dateStart,
         string $dateEnd): float {
-
         $customers = $query->select(['customer_id'])
-            ->whereOr(function ($query) use ($zipCodes) {
+            ->orWhere(function ($query) use ($zipCodes) {
                 foreach ($zipCodes as $zips) {
                     $query = $query->whereBetween('zip_code', $zips);
                 }
                 return $query;
             });
-        $total = ($customers->get())->map(function($customer) use ($dateStart, $dateEnd) {
+        $total = ($customers->get())->map(function ($customer) use ($dateStart, $dateEnd) {
             return $customer
-            ->trayother
-            //->whereBetween('date', [$dateStart, $dateEnd])
-            ->sum('total');
+                ->trayother
+                //->whereBetween('date', [$dateStart, $dateEnd])
+                ->sum('total');
         })[0];
         return $total;
 
@@ -64,20 +58,19 @@ class Traycustomer extends Model
         array $zipCodes,
         string $dateStart,
         string $dateEnd) {
-
         $customers = $query->select(['customer_id'])
-            ->whereOr(function ($query) use ($zipCodes) {
+            ->orWhere(function ($query) use ($zipCodes) {
                 foreach ($zipCodes as $zips) {
                     $query = $query->whereBetween('zip_code', $zips);
                 }
                 return $query;
             });
-        $orders = ($customers->get())->map(function($customer) use ($dateStart, $dateEnd) {
+        $customers = $customers->get();
+        $orders = ($customers->get())->map(function ($customer) use ($dateStart, $dateEnd) {
             return $customer
-            ->trayother
-            //->whereBetween('date', [$dateStart, $dateEnd])
-            ->groupBy("status");
-
+                ->trayother
+                //->whereBetween('date', [$dateStart, $dateEnd])
+                ->groupBy("status");
         })[0];
         return $orders;
 

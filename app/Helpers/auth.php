@@ -11,7 +11,7 @@ if(!function_exists('getUserLoggedId'))
 {
     function getUserLoggedId()
     {
-        return auth()->user()->id;
+       return auth()->user()->id;
     }
 }
 

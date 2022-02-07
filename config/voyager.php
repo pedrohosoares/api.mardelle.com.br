@@ -82,7 +82,7 @@ return [
         'tables' => [
             'hidden' => ['migrations', 'data_rows', 'data_types', 'menu_items', 'password_resets', 'permission_role', 'settings'],
         ],
-        'autoload_migrations' => true,
+        'autoload_migrations' => false,
     ],
 
     /*
@@ -181,13 +181,13 @@ return [
     |
     */
 
-    'primary_color' => '#22A7F0',
+    'primary_color' => '#e82258',
 
-    'show_dev_tips' => true, // Show development tip "How To Use:" in Menu and Settings
+    'show_dev_tips' => false, // Show development tip "How To Use:" in Menu and Settings
 
     // Here you can specify additional assets you would like to be included in the master.blade
     'additional_css' => [
-        //'css/custom.css',
+        'css/admin.css',
     ],
 
     'additional_js' => [

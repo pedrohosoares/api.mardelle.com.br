@@ -17,9 +17,11 @@ class UserByLoggedScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
+        dd(getUserLoggedIsAdmin());
         if(!getUserLoggedIsAdmin())
         {
-            $builder->where('users.id', getUserLoggedId());
+            dd(getUserLoggedId());
+            //$builder->where('users.id', getUserLoggedId());
         }
     }
 }

@@ -43,10 +43,14 @@ class User extends \TCG\Voyager\Models\User
 
     public function scopeGetZipCodesByUser(object $query): object
     {
-        return $query->select(['locations.zip_code_start', 'locations.zip_code_end'])
-            ->join('user_locations', 'users.id', 'user_locations.user_id')
+        $query = $query->select(['locations.zip_code_start', 'locations.zip_code_end']);
+        if (!getUserLoggedIsAdmin()) {
+            //$query = $query->where('users.id', getUserLoggedId());
+        }
+        $query = $query->join('user_locations', 'users.id', 'user_locations.user_id')
             ->join('locations', 'locations.id', 'user_locations.location_id')
             ->get();
+        return $query;
     }
 
     public function customerZipCodes(): BelongsToMany

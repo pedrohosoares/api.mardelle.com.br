@@ -14,6 +14,4 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::get('total',[MoneyController::class,'total']);
-Route::get('total_mounth',[MoneyController::class,'totalMounth']);
-Route::get('order_by_status',[OrderController::class,'orderByStatus']);
+

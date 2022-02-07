@@ -348,7 +348,7 @@
                             titleFontSize: 24
                         },
                         data: [{
-                            type: "column",
+                            type: "line",
                             yValueFormatString: "#,### Reais",
                             dataPoints: this.dataPoints
                         }]
