@@ -19,7 +19,7 @@ class OrderSupport
     {
         return $orderByStatus->map(function ($values, $index) {
             return $values->reduce(function ($index,$value) {
-                return collect($value)->sum('total');
+                return $value->sum('total');
             });
         })->toArray();
     }

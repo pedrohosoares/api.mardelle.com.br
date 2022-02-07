@@ -49,14 +49,12 @@ class Traycustomer extends Model
                 }
                 return $query;
             });
-        $total = 0;
-        foreach ($customers->get() as $customer) {
-            $total +=
-            $customer
-                ->trayother
-                ->whereBetween('date', [$dateStart, $dateEnd])
-                ->sum('total');
-        }
+        $total = ($customers->get())->map(function($customer) use ($dateStart, $dateEnd) {
+            return $customer
+            ->trayother
+            //->whereBetween('date', [$dateStart, $dateEnd])
+            ->sum('total');
+        })[0];
         return $total;
 
     }
@@ -74,7 +72,7 @@ class Traycustomer extends Model
                 }
                 return $query;
             });
-        $orders = collect($customers->get())->map(function($customer) use ($dateStart, $dateEnd) {
+        $orders = ($customers->get())->map(function($customer) use ($dateStart, $dateEnd) {
             return $customer
             ->trayother
             //->whereBetween('date', [$dateStart, $dateEnd])

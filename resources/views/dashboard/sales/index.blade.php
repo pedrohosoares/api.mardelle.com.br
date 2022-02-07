@@ -384,7 +384,7 @@
                                 <div class="card col-md-3">
                                     <h5>${value}</h5>
                                     <div class="card-body">
-                                        R$ ${e[value].toFixed(2).replace('.',',')}
+                                        R$ ${e[value].replace('.',',')}
                                     </div>
                                 </div>
                                 `;
