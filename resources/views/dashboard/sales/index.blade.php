@@ -286,6 +286,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-sm-12" id="results">
+                                    <h3>Valor total: <span id="totalValue">0</span></h3>
                                     <div id="chartContainer" style="height: 370px; max-width:100%; margin: 0px auto;">
                                     </div>
                                 </div>
@@ -315,6 +316,7 @@
                 url: "",
                 dataPoints: [],
                 dataPointsKey: null,
+                totalValue: $('span#totalValue'),
                 divMonthsMoney: $('#divMonthsMoney'),
                 user_id: "{{ Auth::User()->id }}",
                 email: "{{ Auth::User()->email }}",
@@ -374,15 +376,8 @@
                         url: this.url,
                         type: 'GET',
                         success: (e) => {
-                            for (var i = 0; i < e.length; i++) {
-                                this.dataPoints.push({
-                                    x: new Date(e[i][0]),
-                                    y: e[i][1]
-                                });
-                            }
-                        },
-                        complete: (e) => {
-                            this.chart();
+                            e = "R$"+parseFloat(e).toFixed(2).replace('.',',');
+                            this.totalValue.text(e);
                         }
                     });
                 },
@@ -454,12 +449,12 @@
                     this.ajaxByDateAndStatus();
                 },
                 getMoneyOfYear() {
-                    this.url = "/api/total_by_interval?mounths=" + this.months();
+                    this.url = "/api/total?date_start=" + this.dateStart+"&date_end="+this.dateEnd;
                     this.ajax();
                 },
                 init() {
                     this.getMoneyByDateAndStatusInterval();
-                    //this.getMoneyOfYear();
+                    this.getMoneyOfYear();
                     this.getByStatus();
                 }
 

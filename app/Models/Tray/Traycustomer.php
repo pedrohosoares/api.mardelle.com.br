@@ -38,13 +38,18 @@ class Traycustomer extends Model
         string $dateStart,
         string $dateEnd): float {
         $customers = $query->select(['customer_id'])
-            ->orWhere(function ($query) use ($zipCodes) {
+            ->whereOr(function ($query) use ($zipCodes) {
                 foreach ($zipCodes as $zips) {
                     $query = $query->whereBetween('zip_code', $zips);
                 }
                 return $query;
             });
-        $total = ($customers->get())->map(function ($customer) use ($dateStart, $dateEnd) {
+        $customers = $customers->get();
+        if(empty($customers->toArray()))
+        {
+            return 0.00;
+        }
+        $total = ($customers)->map(function ($customer) use ($dateStart, $dateEnd) {
             return $customer
                 ->trayother
                 ->whereBetween('date', [$dateStart, $dateEnd])
