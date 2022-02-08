@@ -29,6 +29,7 @@ Route::post('/request',[NotificationController::class,'save']);
 Route::prefix('api')->group(function(){
     Route::get('total',[MoneyController::class,'total']);
     Route::get('total_mounth',[MoneyController::class,'totalMounth']);
+    Route::get('total_by_interval',[MoneyController::class,'totalByInterval']);
     Route::get('order_by_status',[ApiOrderController::class,'orderByStatus']);
 });
 

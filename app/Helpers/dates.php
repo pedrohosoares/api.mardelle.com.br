@@ -36,4 +36,31 @@ if(!function_exists('getNameMouthsByNumber'))
     }
 }
 
+if(!function_exists('complementDateByInterval'))
+{
+    function complementDateByInterval(string $dateStart,string $dateEnd)
+    {
+        $intervalDates = [$dateStart];
+        $actualDate = $dateStart;
+        while ($actualDate < $dateEnd) {
+            $actualDate = date('Y-m-d', strtotime("+ 1 month", strtotime($actualDate)));
+            $intervalDates[] = $actualDate;
+        }
+        return $intervalDates;
+    }
+}
+
+if(!function_exists('complementDateByIntervalInIndex'))
+{
+    function complementDateByIntervalInIndex(string $dateStart,string $dateEnd)
+    {
+        $intervalDates[$dateStart] = [];
+        $actualDate = $dateStart;
+        while ($actualDate < $dateEnd) {
+            $actualDate = date('Y-m-d', strtotime("+ 1 month", strtotime($actualDate)));
+            $intervalDates[$actualDate] = [];
+        }
+        return $intervalDates;
+    }
+}
 

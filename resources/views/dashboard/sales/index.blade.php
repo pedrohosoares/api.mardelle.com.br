@@ -254,15 +254,16 @@
                 <div class="panel-body">
                     <div class="table-responsive">
                         <div id="dataTable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
-                            <!--
                             <div class="row">
-                                <div class="col-sm-12">
-                                    <div id="dataTable_filter" class="dataTables_filter">
-                                        <label>
-                                            <button id="download_excel" class="btn btn-primary">BAIXAR (CSV)</button>
-                                        </label>
-                                    </div>
-                                </div>
+                                <!--
+                                                    <div class="col-sm-12">
+                                                        <div id="dataTable_filter" class="dataTables_filter">
+                                                            <label>
+                                                                <button id="download_excel" class="btn btn-primary">BAIXAR (CSV)</button>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                -->
                                 <div class="col-sm-12">
                                     <form method="GET">
                                         <div class="dataTables_length" id="dataTable_length">
@@ -283,7 +284,6 @@
                                     </form>
                                 </div>
                             </div>
-                            -->
                             <div class="row">
                                 <div class="col-sm-12" id="results">
                                     <div id="chartContainer" style="height: 370px; max-width:100%; margin: 0px auto;">
@@ -292,7 +292,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <h2>Pedidos por status</h2>
+
                                 </div>
                             </div>
                             <div class="row" id="divMonthsMoney" class="justify-content-center">
@@ -314,44 +314,58 @@
             const soares_sales = {
                 url: "",
                 dataPoints: [],
+                dataPointsKey: null,
                 divMonthsMoney: $('#divMonthsMoney'),
                 user_id: "{{ Auth::User()->id }}",
                 email: "{{ Auth::User()->email }}",
+                dateStart: "{{ $date_start }}",
+                dateEnd: "{{ $date_end }}",
                 chartContainer: 'chartContainer',
-                months: [
-                    '01',
-                    '02',
-                    '03',
-                    '04',
-                    '05',
-                    '06',
-                    '07',
-                    '08',
-                    '09',
-                    '10',
-                    '11',
-                    '12'
-                ],
-                renderDivsMounths()
-                {
-
+                months() {
+                    let start = new Date(this.dateStart);
+                    start.setDate(start.getDate() + 1);
+                    let stop = new Date(this.dateEnd);
+                    stop.setDate(stop.getDate() + 1);
+                    let actual = new Date(this.dateStart);
+                    let dates = [start];
+                    while (actual < stop) {
+                        actual.setMonth(actual.getMonth() + 1);
+                        actual.setDate(1);
+                        dates.push(actual.toLocaleString('pt-BR').split(' ')[0]);
+                    }
+                    dates[0] = start.toLocaleString('pt-BR').split(' ')[0]
+                    dates[dates.length - 1] = stop.toLocaleString('pt-BR').split(' ')[0];
+                    let newDate = [dates[0].split('/').reverse().join('-')];
+                    newDate.push(dates[dates.length - 1].split('/').reverse().join('-'));
+                    return newDate.join(',');
                 },
                 chart() {
+                    const data = [];
+                    this.dataPointsKey.map((nameStatus)=>{
+                        data.push(
+                            {
+                                type: "bar",
+                                name: nameStatus,
+                                yValueFormatString: "#,### Reais",
+                                dataPoints: this.dataPoints[nameStatus],
+                            }
+                        )
+                    });
                     chart = new CanvasJS.Chart(this.chartContainer, {
                         animationEnabled: true,
-                        theme: "light2",
+                        theme: "line",
                         title: {
-                            text: "Gráfico anual de Vendas"
+                            text: "Gráfico de Vendas"
+                        },
+                        toolTip: {
+                            shared: true
                         },
                         axisY: {
                             title: "R$",
                             titleFontSize: 24
                         },
-                        data: [{
-                            type: "line",
-                            yValueFormatString: "#,### Reais",
-                            dataPoints: this.dataPoints
-                        }]
+                        locale : 'pt-BR',
+                        data: data
                     });
                     chart.render();
                 },
@@ -372,14 +386,51 @@
                         }
                     });
                 },
-                ajaxByStatus()
-                {
+                ajaxByDateAndStatus() {
+                    $.ajax({
+                        url: this.url,
+                        type: 'GET',
+                        success: (object) => {
+                            let noExistData = true;
+                            for (const status in object) {
+                                noExistData = false;
+                                const date = Object.keys(object[status])[0];
+                                const value = Object.values(object[status])[0];
+                                if (this.dataPoints[status] == undefined) {
+                                    this.dataPoints[status] = [];
+                                }
+                                this.dataPoints[status].push({
+                                    x: new Date(date),
+                                    y: value
+                                })
+                            }
+                            if(noExistData)
+                            {
+                                if(this.dataPoints['Nenhuma venda'] == undefined){
+                                    this.dataPoints['Nenhuma venda'] = [];
+                                }
+                                this.dataPoints['Nenhuma venda'].push({
+                                    x: new Date(this.dateStart),
+                                    y: 0
+                                })
+                                this.dataPoints['Nenhuma venda'].push({
+                                    x: new Date(this.dateEnd),
+                                    y: 0
+                                })
+                            }
+                            this.dataPointsKey = Object.keys(this.dataPoints);
+                        },
+                        complete: (e) => {
+                            this.chart();
+                        }
+                    });
+                },
+                ajaxByStatus() {
                     $.ajax({
                         url: this.url,
                         type: 'GET',
                         success: (e) => {
-                            for(let value in e)
-                            {
+                            for (let value in e) {
                                 let html = `
                                 <div class="card col-md-3">
                                     <h5>${value}</h5>
@@ -391,27 +442,24 @@
                                 this.divMonthsMoney.append(html);
                             }
                         },
-                        complete: (e) => {
-                        }
+                        complete: (e) => {}
                     });
                 },
-                getByStatus()
-                {
+                getByStatus() {
                     this.url = "/api/order_by_status";
                     this.ajaxByStatus();
                 },
-                getMoneyByDateInterval() {
-                    //this.url = "/api/total_mounth?mounths="+this.months;
-                    //ajax();
+                getMoneyByDateAndStatusInterval() {
+                    this.url = "/api/total_by_interval?mounths=" + this.months();
+                    this.ajaxByDateAndStatus();
                 },
                 getMoneyOfYear() {
-                    this.url = "/api/total_mounth?mounths=" + this.months;
+                    this.url = "/api/total_by_interval?mounths=" + this.months();
                     this.ajax();
                 },
                 init() {
-                    this.months = this.months.join(',');
-                    this.getMoneyByDateInterval();
-                    this.getMoneyOfYear();
+                    this.getMoneyByDateAndStatusInterval();
+                    //this.getMoneyOfYear();
                     this.getByStatus();
                 }
 

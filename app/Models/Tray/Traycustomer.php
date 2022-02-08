@@ -2,6 +2,7 @@
 
 namespace App\Models\Tray;
 
+use App\Http\Support\TotalMoneyDateCompleteSupport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -46,7 +47,7 @@ class Traycustomer extends Model
         $total = ($customers->get())->map(function ($customer) use ($dateStart, $dateEnd) {
             return $customer
                 ->trayother
-                //->whereBetween('date', [$dateStart, $dateEnd])
+                ->whereBetween('date', [$dateStart, $dateEnd])
                 ->sum('total');
         })[0];
         return $total;
@@ -59,20 +60,82 @@ class Traycustomer extends Model
         string $dateStart,
         string $dateEnd) {
         $customers = $query->select(['customer_id'])
-            ->orWhere(function ($query) use ($zipCodes) {
+            ->whereOr(function ($query) use ($zipCodes) {
                 foreach ($zipCodes as $zips) {
                     $query = $query->whereBetween('zip_code', $zips);
                 }
                 return $query;
             });
-        $customers = $customers->get();
         $orders = ($customers->get())->map(function ($customer) use ($dateStart, $dateEnd) {
             return $customer
                 ->trayother
-                //->whereBetween('date', [$dateStart, $dateEnd])
+                ->whereBetween('date', [$dateStart, $dateEnd])
                 ->groupBy("status");
         })[0];
         return $orders;
+    }
 
+    public function scopeRetriveByStatusAndTotalMoneyPay(
+        object $query,
+        array $zipCodes,
+        string $dateStart,
+        string $dateEnd) {
+        $customers = $query->select(['customer_id'])
+            ->whereOr(function ($query) use ($zipCodes) {
+                foreach ($zipCodes as $zips) {
+                    $query = $query->whereBetween('zip_code', $zips);
+                }
+                return $query;
+            });
+        $orders = ($customers->get())->map(function ($customer) use ($dateStart, $dateEnd) {
+            return $customer
+                ->trayother
+                ->whereBetween('date', [$dateStart, $dateEnd])
+                ->groupBy("status");
+        })[0];
+        return TotalMoneyDateCompleteSupport::sumTotalByStatusAndDate($orders);
+    }
+
+    public function scopeRetriveByDateStatusAndTotalMoneyPay(
+        object $query,
+        array $zipCodes,
+        string $dateStart,
+        string $dateEnd) {
+        $customers = $query->select(['customer_id'])
+            ->whereOr(function ($query) use ($zipCodes) {
+                foreach ($zipCodes as $zips) {
+                    $query = $query->whereBetween('zip_code', $zips);
+                }
+                return $query;
+            });
+        $orders = ($customers->get())->map(function ($customer) use ($dateStart, $dateEnd) {
+            return $customer
+                ->trayother
+                ->whereBetween('date', [$dateStart, $dateEnd])
+                ->groupBy("status");
+        })[0];
+        return TotalMoneyDateCompleteSupport::sumTotalByStatusAndDate($orders);
+    }
+
+    public function scopeRetriveStatusMoneyPayByMonth(
+        object $query,
+        array $zipCodes,
+        string $dateStart,
+        string $dateEnd) {
+        $customers = $query->select(['customer_id'])
+            ->whereOr(function ($query) use ($zipCodes) {
+                foreach ($zipCodes as $zips) {
+                    $query = $query->whereBetween('zip_code', $zips);
+                }
+                return $query;
+            });
+        $orders = ($customers->get())->map(function ($customer) use ($dateStart, $dateEnd) {
+            return $customer
+                ->trayother
+                ->whereBetween('date', [$dateStart, $dateEnd])
+                ->groupBy("status");
+        })[0];
+        $dates = TotalMoneyDateCompleteSupport::sumMoneyByDateAndStatus($orders);
+        return TotalMoneyDateCompleteSupport::completeArrayDateStatusByFirstAtLast($dates, $dateStart, $dateEnd);
     }
 }

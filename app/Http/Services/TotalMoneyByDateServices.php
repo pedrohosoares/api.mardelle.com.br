@@ -10,7 +10,7 @@ use App\Models\User;
 class TotalMoneyByDateServices
 {
 
-    public static function getTotal(string $dateStart,string $dateEnd) : float
+    public static function getTotal(string $dateStart, string $dateEnd): float
     {
         $zipCodesUser = User::getZipCodesByUser()->toArray();
         $zipCodes = ZipCodeOrganizeSupport::resetIndexArrayZipCode($zipCodesUser);
@@ -27,20 +27,31 @@ class TotalMoneyByDateServices
         $zipCodesUser = User::getZipCodesByUser()->toArray();
         $zipCodes = ZipCodeOrganizeSupport::resetIndexArrayZipCode($zipCodesUser);
         $newdates = TotalMoneyDateCompleteSupport::completeStartAndEndDate($mounths);
-        $total = collect($newdates)->map(function($dates) use ($zipCodes){
+        $total = collect($newdates)->map(function ($dates) use ($zipCodes) {
             $dateStart = $dates[0];
             $dateEnd = $dates[1];
             return [
+                $dateStart,
+                Traycustomer::retriveTotalMoneyPay(
+                    $zipCodes,
                     $dateStart,
-                    Traycustomer::retriveTotalMoneyPay(
-                        $zipCodes,
-                        $dateStart,
-                        $dateEnd
-                    ),
+                    $dateEnd
+                ),
             ];
         })->toArray();
         return $total;
     }
 
+    public static function getTotalByInterval(string $dateStart, string $dateEnd)
+    {
+        $zipCodesUser = User::getZipCodesByUser()->toArray();
+        $zipCodes = ZipCodeOrganizeSupport::resetIndexArrayZipCode($zipCodesUser);
+        return Traycustomer::retriveByDateStatusAndTotalMoneyPay(
+            $zipCodes,
+            $dateStart,
+            $dateEnd
+        );
+
+    }
 
 }

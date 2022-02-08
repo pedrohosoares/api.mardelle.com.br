@@ -21,4 +21,14 @@ class MoneyController extends Controller
     {
         return TotalMoneyByDateServices::getTotalMounths(explode(',',$request->mounths));
     }
+
+    public function totalByInterval(Request $request)
+    {
+        if(!$request->has('mounths'))
+        {
+            exit;
+        }
+        $dates = explode(',',$request->mounths);
+        return TotalMoneyByDateServices::getTotalByInterval($dates[0], $dates[1]);
+    }
 }
