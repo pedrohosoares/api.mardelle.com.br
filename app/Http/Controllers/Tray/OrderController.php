@@ -50,7 +50,6 @@ class OrderController extends Controller
                 ['order_id' => $order['id']],
                 $order
             );
-            $customer['Customer']['customer_id'] = $order['customer_id'];
             Traycustomer::updateOrCreate(
                 [
                     'customer_id' => $order['customer_id']

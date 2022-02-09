@@ -37,16 +37,18 @@ class Traycustomer extends Model
         array $zipCodes,
         string $dateStart,
         string $dateEnd): float {
+        if (empty($zipCodes)) {
+            return 0.00;
+        }
         $customers = $query->select(['customer_id'])
-            ->whereOr(function ($query) use ($zipCodes) {
+            ->where(function ($query) use ($zipCodes) {
                 foreach ($zipCodes as $zips) {
-                    $query = $query->whereBetween('zip_code', $zips);
+                    $query = $query->orWhereBetween('zip_code', $zips);
                 }
                 return $query;
             });
         $customers = $customers->get();
-        if(empty($customers->toArray()))
-        {
+        if ($customers->count() === 0) {
             return 0.00;
         }
         $total = ($customers)->map(function ($customer) use ($dateStart, $dateEnd) {
@@ -67,7 +69,7 @@ class Traycustomer extends Model
         $customers = $query->select(['customer_id'])
             ->whereOr(function ($query) use ($zipCodes) {
                 foreach ($zipCodes as $zips) {
-                    $query = $query->whereBetween('zip_code', $zips);
+                    $query = $query->orWhereBetween('zip_code', $zips);
                 }
                 return $query;
             });
@@ -86,9 +88,9 @@ class Traycustomer extends Model
         string $dateStart,
         string $dateEnd) {
         $customers = $query->select(['customer_id'])
-            ->whereOr(function ($query) use ($zipCodes) {
+            ->where(function ($query) use ($zipCodes) {
                 foreach ($zipCodes as $zips) {
-                    $query = $query->whereBetween('zip_code', $zips);
+                    $query = $query->orWhereBetween('zip_code', $zips);
                 }
                 return $query;
             });
@@ -105,19 +107,27 @@ class Traycustomer extends Model
         object $query,
         array $zipCodes,
         string $dateStart,
-        string $dateEnd) {
-        $customers = $query->select(['customer_id'])
-            ->whereOr(function ($query) use ($zipCodes) {
+        string $dateEnd,
+        string $groupBy = 'status') {
+        if (empty($zipCodes)) {
+            return 0.00;
+        }
+        $customers = $query->select(['customer_id', 'zip_code'])
+            ->where(function ($query) use ($zipCodes) {
                 foreach ($zipCodes as $zips) {
-                    $query = $query->whereBetween('zip_code', $zips);
+                    $query = $query->orWhereBetween('zip_code', $zips);
                 }
                 return $query;
             });
-        $orders = ($customers->get())->map(function ($customer) use ($dateStart, $dateEnd) {
+        $customers = $customers->get();
+        if ($customers->count() === 0) {
+            return [];
+        }
+        $orders = ($customers)->map(function ($customer) use ($dateStart, $dateEnd, $groupBy) {
             return $customer
                 ->trayother
                 ->whereBetween('date', [$dateStart, $dateEnd])
-                ->groupBy("status");
+                ->groupBy($groupBy);
         })[0];
         return TotalMoneyDateCompleteSupport::sumTotalByStatusAndDate($orders);
     }
@@ -128,9 +138,9 @@ class Traycustomer extends Model
         string $dateStart,
         string $dateEnd) {
         $customers = $query->select(['customer_id'])
-            ->whereOr(function ($query) use ($zipCodes) {
+            ->where(function ($query) use ($zipCodes) {
                 foreach ($zipCodes as $zips) {
-                    $query = $query->whereBetween('zip_code', $zips);
+                    $query = $query->orWhereBetween('zip_code', $zips);
                 }
                 return $query;
             });

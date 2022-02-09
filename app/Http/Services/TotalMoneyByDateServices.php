@@ -42,16 +42,16 @@ class TotalMoneyByDateServices
         return $total;
     }
 
-    public static function getTotalByInterval(string $dateStart, string $dateEnd)
+    public static function getTotalByInterval(string $dateStart, string $dateEnd, string $groupBy = 'status')
     {
         $zipCodesUser = User::getZipCodesByUser()->toArray();
         $zipCodes = ZipCodeOrganizeSupport::resetIndexArrayZipCode($zipCodesUser);
         return Traycustomer::retriveByDateStatusAndTotalMoneyPay(
             $zipCodes,
             $dateStart,
-            $dateEnd
+            $dateEnd,
+            $groupBy
         );
 
     }
-
 }

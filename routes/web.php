@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\FranqueadoController;
 use App\Http\Controllers\Api\MoneyController;
 use App\Http\Controllers\Api\OrderController as ApiOrderController;
 use App\Http\Controllers\Dashboard\DashBoardController;
@@ -27,9 +28,11 @@ use Illuminate\Support\Facades\Route;
 Route::post('/request',[NotificationController::class,'save']);
 
 Route::prefix('api')->group(function(){
+    Route::get('franqueados',[FranqueadoController::class,'getIdAndMail']);
     Route::get('total',[MoneyController::class,'total']);
     Route::get('total_mounth',[MoneyController::class,'totalMounth']);
     Route::get('total_by_interval',[MoneyController::class,'totalByInterval']);
+    Route::get('total_by_payment_interval',[MoneyController::class,'totalByPaymentInterval']);
     Route::get('order_by_status',[ApiOrderController::class,'orderByStatus']);
 });
 

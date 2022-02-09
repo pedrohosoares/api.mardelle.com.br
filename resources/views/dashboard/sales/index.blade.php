@@ -256,17 +256,25 @@
                         <div id="dataTable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
                             <div class="row">
                                 <!--
-                                                    <div class="col-sm-12">
-                                                        <div id="dataTable_filter" class="dataTables_filter">
-                                                            <label>
-                                                                <button id="download_excel" class="btn btn-primary">BAIXAR (CSV)</button>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                -->
+                                                            <div class="col-sm-12">
+                                                                <div id="dataTable_filter" class="dataTables_filter">
+                                                                    <label>
+                                                                        <button id="download_excel" class="btn btn-primary">BAIXAR (CSV)</button>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        -->
                                 <div class="col-sm-12">
                                     <form method="GET">
                                         <div class="dataTables_length" id="dataTable_length">
+                                            <!--
+                                            <label>
+                                                Franqueado
+                                                <select name="user" class="form-control input-sm" id="selectUser">
+                                                    <option value="">Todos</option>
+                                                </select>
+                                            </label>
+                                            -->
                                             <label>
                                                 Data de início
                                                 <input value="{{ $date_start }}" type="date" class="form-control input-sm"
@@ -288,6 +296,12 @@
                                 <div class="col-sm-12" id="results">
                                     <h3>Valor total: <span id="totalValue">0</span></h3>
                                     <div id="chartContainer" style="height: 370px; max-width:100%; margin: 0px auto;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="chartContainerMoney" style="height: 370px; max-width:100%; margin: 0px auto;">
                                     </div>
                                 </div>
                             </div>
@@ -318,11 +332,14 @@
                 dataPointsKey: null,
                 totalValue: $('span#totalValue'),
                 divMonthsMoney: $('#divMonthsMoney'),
+                selectUser: $('#selectUser'),
                 user_id: "{{ Auth::User()->id }}",
                 email: "{{ Auth::User()->email }}",
                 dateStart: "{{ $date_start }}",
                 dateEnd: "{{ $date_end }}",
+                user: "{{ $user }}",
                 chartContainer: 'chartContainer',
+                chartContainerMoney: 'chartContainerMoney',
                 months() {
                     let start = new Date(this.dateStart);
                     start.setDate(start.getDate() + 1);
@@ -343,15 +360,13 @@
                 },
                 chart() {
                     const data = [];
-                    this.dataPointsKey.map((nameStatus)=>{
-                        data.push(
-                            {
-                                type: "bar",
-                                name: nameStatus,
-                                yValueFormatString: "#,### Reais",
-                                dataPoints: this.dataPoints[nameStatus],
-                            }
-                        )
+                    this.dataPointsKey.map((nameStatus) => {
+                        data.push({
+                            type: "bar",
+                            name: nameStatus,
+                            yValueFormatString: "#,### Reais",
+                            dataPoints: this.dataPoints[nameStatus],
+                        })
                     });
                     chart = new CanvasJS.Chart(this.chartContainer, {
                         animationEnabled: true,
@@ -366,7 +381,35 @@
                             title: "R$",
                             titleFontSize: 24
                         },
-                        locale : 'pt-BR',
+                        locale: 'pt-BR',
+                        data: data
+                    });
+                    chart.render();
+                },
+                chartMoney() {
+                    const data = [];
+                    this.dataPointsKey.map((nameStatus) => {
+                        data.push({
+                            type: "bar",
+                            name: nameStatus,
+                            yValueFormatString: "#,### Reais",
+                            dataPoints: this.dataPoints[nameStatus],
+                        })
+                    });
+                    chart = new CanvasJS.Chart(this.chartContainerMoney, {
+                        animationEnabled: true,
+                        theme: "line",
+                        title: {
+                            text: "Vendas por método de pagamento"
+                        },
+                        toolTip: {
+                            shared: true
+                        },
+                        axisY: {
+                            title: "R$",
+                            titleFontSize: 24
+                        },
+                        locale: 'pt-BR',
                         data: data
                     });
                     chart.render();
@@ -376,7 +419,7 @@
                         url: this.url,
                         type: 'GET',
                         success: (e) => {
-                            e = "R$"+parseFloat(e).toFixed(2).replace('.',',');
+                            e = "R$" + parseFloat(e).toFixed(2).replace('.', ',');
                             this.totalValue.text(e);
                         }
                     });
@@ -399,9 +442,8 @@
                                     y: value
                                 })
                             }
-                            if(noExistData)
-                            {
-                                if(this.dataPoints['Nenhuma venda'] == undefined){
+                            if (noExistData) {
+                                if (this.dataPoints['Nenhuma venda'] == undefined) {
                                     this.dataPoints['Nenhuma venda'] = [];
                                 }
                                 this.dataPoints['Nenhuma venda'].push({
@@ -417,6 +459,45 @@
                         },
                         complete: (e) => {
                             this.chart();
+                        }
+                    });
+                },
+                ajaxByDateAndMoney() {
+                    $.ajax({
+                        url: this.url,
+                        type: 'GET',
+                        success: (object) => {
+                            this.dataPoints = [];
+                            let noExistData = true;
+                            for (const status in object) {
+                                noExistData = false;
+                                const date = Object.keys(object[status])[0];
+                                const value = Object.values(object[status])[0];
+                                if (this.dataPoints[status] == undefined) {
+                                    this.dataPoints[status] = [];
+                                }
+                                this.dataPoints[status].push({
+                                    x: new Date(date),
+                                    y: value
+                                })
+                            }
+                            if (noExistData) {
+                                if (this.dataPoints['Nenhuma venda'] == undefined) {
+                                    this.dataPoints['Nenhuma venda'] = [];
+                                }
+                                this.dataPoints['Nenhuma venda'].push({
+                                    x: new Date(this.dateStart),
+                                    y: 0
+                                })
+                                this.dataPoints['Nenhuma venda'].push({
+                                    x: new Date(this.dateEnd),
+                                    y: 0
+                                })
+                            }
+                            this.dataPointsKey = Object.keys(this.dataPoints);
+                        },
+                        complete: (e) => {
+                            this.chartMoney();
                         }
                     });
                 },
@@ -440,6 +521,36 @@
                         complete: (e) => {}
                     });
                 },
+                ajaxGetUsers() {
+                    $.ajax({
+                        url: this.url,
+                        type: 'GET',
+                        success: (e) => {
+                            this.selectUser.val('');
+                            let data = [];
+                            let html = '';
+                            data.push({
+                                id: '%',
+                                email: 'Todos'
+                            });
+                            for (const key in e) {
+                                data.push({
+                                    id: e[key].id,
+                                    email: e[key].name + " - " + e[key].email,
+                                });
+                            }
+                            data.forEach((v,i)=>{
+                                if(v.id == this.user){
+                                    html += "<option selected value='"+v.id+"'>"+v.email+"</option>";
+                                }else{
+                                    html += "<option value='"+v.id+"'>"+v.email+"</option>";
+                                }
+                            });
+                            this.selectUser.html(html);
+                        },
+                        complete: (e) => {}
+                    });
+                },
                 getByStatus() {
                     this.url = "/api/order_by_status";
                     this.ajaxByStatus();
@@ -448,14 +559,24 @@
                     this.url = "/api/total_by_interval?mounths=" + this.months();
                     this.ajaxByDateAndStatus();
                 },
+                getMoneyByDateAndMoneyInterval() {
+                    this.url = "/api/total_by_payment_interval?mounths=" + this.months();
+                    this.ajaxByDateAndMoney();
+                },
                 getMoneyOfYear() {
-                    this.url = "/api/total?date_start=" + this.dateStart+"&date_end="+this.dateEnd;
+                    this.url = "/api/total?date_start=" + this.dateStart + "&date_end=" + this.dateEnd;
                     this.ajax();
+                },
+                getUsers() {
+                    this.url = "/api/franqueados";
+                    this.ajaxGetUsers();
                 },
                 init() {
                     this.getMoneyByDateAndStatusInterval();
+                    this.getMoneyByDateAndMoneyInterval();
                     this.getMoneyOfYear();
                     this.getByStatus();
+                    //this.getUsers();
                 }
 
             };

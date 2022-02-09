@@ -16,9 +16,11 @@ class SaleController extends Controller
         ? $request->date_start : date('Y-m-d', strtotime('-1 month'));
         $dateEnd = !empty($request->date_end)
         ? $request->date_end : date('Y-m-d');
+        $user = !empty($request->user) ? $request->user : "";
         return view('dashboard.sales.index', [
             'date_start' => $dateStart,
             'date_end' => $dateEnd,
+            'user' => $user
         ]);
     }
 
