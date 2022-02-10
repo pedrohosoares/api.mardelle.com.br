@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\FranqueadoController;
 use App\Http\Controllers\Api\MoneyController;
 use App\Http\Controllers\Api\OrderController as ApiOrderController;
 use App\Http\Controllers\Dashboard\DashBoardController;
+use App\Http\Controllers\Dashboard\LocationController;
 use App\Http\Controllers\Dashboard\SaleController as DashboardSaleController;
 use App\Http\Controllers\Tray\CustomerController;
 use App\Http\Controllers\Tray\NotificationController;

@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Location;
 use App\Models\Tray\Traycustomer;
 use App\Observers\CustomerTrayObserver;
+use App\Observers\LocationObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -30,5 +32,6 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         Traycustomer::observe(CustomerTrayObserver::class);
+        Location::observe(LocationObserver::class);
     }
 }

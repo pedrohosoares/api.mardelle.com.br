@@ -575,7 +575,7 @@
                     this.getMoneyByDateAndStatusInterval();
                     this.getMoneyByDateAndMoneyInterval();
                     this.getMoneyOfYear();
-                    this.getByStatus();
+                    //this.getByStatus();
                     //this.getUsers();
                 }
 
