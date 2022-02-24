@@ -17,7 +17,7 @@ class NotificationController extends Controller
     {
         $data['json'] = json_encode($data,JSON_UNESCAPED_UNICODE);
         try {
-            Notification::create($data);
+           //Notification::create($data);
         } catch (\Throwable $th) {
 
         }
