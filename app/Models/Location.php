@@ -10,7 +10,13 @@ class Location extends Model
 {
     use HasFactory;
 
-    public $fillable = ['neighborhood','zip_code_start','zip_code_end'];
+    public $fillable = [
+        'country',
+        'state',
+        'neighborhood',
+        'zip_code_start',
+        'zip_code_end'
+    ];
 
     public function userLocation() : BelongsToMany
     {

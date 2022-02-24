@@ -256,34 +256,43 @@
                         <div id="dataTable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
                             <div class="row">
                                 <!--
-                                                            <div class="col-sm-12">
-                                                                <div id="dataTable_filter" class="dataTables_filter">
-                                                                    <label>
-                                                                        <button id="download_excel" class="btn btn-primary">BAIXAR (CSV)</button>
-                                                                    </label>
+                                                                <div class="col-sm-12">
+                                                                    <div id="dataTable_filter" class="dataTables_filter">
+                                                                        <label>
+                                                                            <button id="download_excel" class="btn btn-primary">BAIXAR (CSV)</button>
+                                                                        </label>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        -->
+                                                            -->
                                 <div class="col-sm-12">
                                     <form method="GET">
                                         <div class="dataTables_length" id="dataTable_length">
-                                            <!--
                                             <label>
                                                 Franqueado
+                                                <br />
                                                 <select name="user" class="form-control input-sm" id="selectUser">
                                                     <option value="">Todos</option>
                                                 </select>
                                             </label>
-                                            -->
                                             <label>
                                                 Data de início
+                                                <br />
                                                 <input value="{{ $date_start }}" type="date" class="form-control input-sm"
                                                     name="date_start" id="date_start" />
                                             </label>
                                             <label>
                                                 Data final
+                                                <br />
                                                 <input value="{{ $date_end }}" type="date" class="form-control input-sm"
                                                     name="date_end" id="date_end" />
+                                            </label>
+                                            <label>
+                                                Meio de pagamento
+                                                <br />
+                                                <select class="form-control input-sm" name="payments_form"
+                                                    id="payments_form">
+                                                    <option value="%">Todos</option>
+                                                </select>
                                             </label>
                                             <label>
                                                 <button class="btn btn-success" id="buscar">Buscar</button>
@@ -340,6 +349,7 @@
                 user: "{{ $user }}",
                 chartContainer: 'chartContainer',
                 chartContainerMoney: 'chartContainerMoney',
+                paymentsForm: $('#payments_form'),
                 months() {
                     let start = new Date(this.dateStart);
                     start.setDate(start.getDate() + 1);
@@ -362,7 +372,7 @@
                     const data = [];
                     this.dataPointsKey.map((nameStatus) => {
                         data.push({
-                            type: "bar",
+                            type: "area",
                             name: nameStatus,
                             yValueFormatString: "#,### Reais",
                             dataPoints: this.dataPoints[nameStatus],
@@ -528,25 +538,27 @@
                         success: (e) => {
                             this.selectUser.val('');
                             let data = [];
-                            let html = '';
-                            data.push({
-                                id: '%',
-                                email: 'Todos'
-                            });
+                            let html = '<option value="%">Todos</option>';
                             for (const key in e) {
-                                data.push({
-                                    id: e[key].id,
-                                    email: e[key].name + " - " + e[key].email,
-                                });
+                                html+= '<option value="'+e[key].id+'">'+e[key].email+'</option>';
                             }
-                            data.forEach((v,i)=>{
-                                if(v.id == this.user){
-                                    html += "<option selected value='"+v.id+"'>"+v.email+"</option>";
-                                }else{
-                                    html += "<option value='"+v.id+"'>"+v.email+"</option>";
-                                }
-                            });
                             this.selectUser.html(html);
+                        },
+                        complete: (e) => {}
+                    });
+                },
+                ajaxGetPaymentsForm() {
+                    $.ajax({
+                        url: '/api/payments',
+                        type: 'GET',
+                        success: (e) => {
+                            this.paymentsForm.val('');
+                            let data = [];
+                            let html = '<option value="%">Todos</option>';
+                            for (const key in e) {
+                                html += '<option value="'+e[key].id+'">'+e[key].name+'</option>';
+                            }
+                            this.paymentsForm.html(html);
                         },
                         complete: (e) => {}
                     });
@@ -575,8 +587,9 @@
                     this.getMoneyByDateAndStatusInterval();
                     this.getMoneyByDateAndMoneyInterval();
                     this.getMoneyOfYear();
+                    this.ajaxGetPaymentsForm();
+                    this.getUsers();
                     //this.getByStatus();
-                    //this.getUsers();
                 }
 
             };

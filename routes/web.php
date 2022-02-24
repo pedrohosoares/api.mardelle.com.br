@@ -4,8 +4,8 @@ use App\Http\Controllers\Api\FranqueadoController;
 use App\Http\Controllers\Api\MoneyController;
 use App\Http\Controllers\Api\OrderController as ApiOrderController;
 use App\Http\Controllers\Dashboard\DashBoardController;
-use App\Http\Controllers\Dashboard\LocationController;
 use App\Http\Controllers\Dashboard\SaleController as DashboardSaleController;
+use App\Http\Controllers\Tray\AffiliateController;
 use App\Http\Controllers\Tray\CustomerController;
 use App\Http\Controllers\Tray\NotificationController;
 use App\Http\Controllers\Tray\OrderController;
@@ -26,15 +26,17 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-Route::post('/request',[NotificationController::class,'save']);
+Route::get('/request/read', [NotificationController::class, 'read']);
+Route::post('/request', [NotificationController::class, 'save']);
 
-Route::prefix('api')->group(function(){
-    Route::get('franqueados',[FranqueadoController::class,'getIdAndMail']);
-    Route::get('total',[MoneyController::class,'total']);
-    Route::get('total_mounth',[MoneyController::class,'totalMounth']);
-    Route::get('total_by_interval',[MoneyController::class,'totalByInterval']);
-    Route::get('total_by_payment_interval',[MoneyController::class,'totalByPaymentInterval']);
-    Route::get('order_by_status',[ApiOrderController::class,'orderByStatus']);
+Route::prefix('api')->group(function () {
+    Route::get('payments',[PaymentController::class,'getByDatabase']);
+    Route::get('franqueados', [FranqueadoController::class, 'getIdAndMail']);
+    Route::get('total', [MoneyController::class, 'total']);
+    Route::get('total_mounth', [MoneyController::class, 'totalMounth']);
+    Route::get('total_by_interval', [MoneyController::class, 'totalByInterval']);
+    Route::get('total_by_payment_interval', [MoneyController::class, 'totalByPaymentInterval']);
+    Route::get('order_by_status', [ApiOrderController::class, 'orderByStatus']);
 });
 
 Route::prefix('tray')->group(function () {
@@ -48,6 +50,7 @@ Route::prefix('tray')->group(function () {
 
     /** Orders */
     Route::get('/orders/create', [OrderController::class, 'create']);
+    Route::get('/orders/modified', [OrderController::class, 'getModifiedByDateNow']);
     Route::get('/orders/show', [OrderController::class, 'show']);
     Route::get('/orders/{order_id?}', [OrderController::class, 'get']);
 
@@ -67,16 +70,21 @@ Route::prefix('tray')->group(function () {
 
     /** Customers */
     Route::get('/get-customer', [CustomerController::class, 'getCustomer']);
+
+    /** Affiliate */
+    Route::get('/affiliates/show/{id}', [AffiliateController::class, 'show']);
+    Route::get('/affiliates/get', [AffiliateController::class, 'get']);
+
 });
 
 Route::group(['prefix' => 'admin'], function () {
 
     /** Page view Sale */
-    Route::get('/sales',[DashboardSaleController::class,'get']);
-    Route::get('/show',[DashboardSaleController::class,'show']);
+    Route::get('/sales', [DashboardSaleController::class, 'get']);
+    Route::get('/show', [DashboardSaleController::class, 'show']);
 
     /** Dashboard */
-    Route::get('/dashboard',[DashBoardController::class,'index']);
+    Route::get('/dashboard', [DashBoardController::class, 'index']);
 
     Voyager::routes();
 });

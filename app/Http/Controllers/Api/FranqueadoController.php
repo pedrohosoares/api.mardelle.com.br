@@ -9,6 +9,6 @@ class FranqueadoController extends Controller
 {
     public function getIdAndMail()
     {
-        return User::retrieveMailAndId();
+        return User::retrieveMailAndIdFranqueado();
     }
 }

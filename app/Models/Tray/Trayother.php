@@ -5,6 +5,7 @@ namespace App\Models\Tray;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Trayother extends Model
 {
@@ -32,5 +33,15 @@ class Trayother extends Model
     public function traycustomer() : BelongsTo
     {
         return $this->belongsTo(Traycustomer::class,'customer_id','customer_id');
+    }
+
+    public function afiliate() : BelongsToMany
+    {
+        return $this->belongsToMany(
+            Trayother::class,
+            'affiliate_trayother',
+            'trayother_id',
+            'affiliate_id'
+        );
     }
 }

@@ -64,3 +64,11 @@ if(!function_exists('complementDateByIntervalInIndex'))
     }
 }
 
+if(!function_exists('simpleDateRight'))
+{
+    function simpleDateRight()
+    {
+        return date('Y-m-d',strtotime('-3 hour'));
+    }
+}
+
