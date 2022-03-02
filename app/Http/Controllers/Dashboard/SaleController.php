@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Http\Services\TotalMoneyByDateServices;
+use App\Models\Tray\Trayother;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 

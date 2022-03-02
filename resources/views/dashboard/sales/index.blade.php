@@ -255,8 +255,30 @@
                     <div class="table-responsive">
                         <div id="dataTable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
                             <div class="row">
-                                <div class="col-sm-12">
-                                    <form method="GET">
+                                <div>
+                                    <label>
+                                        <br />
+                                        <button
+                                            data-date="{{ date('Y-m-d', strtotime('+1 month', strtotime(simpleDateRight()))) }}"
+                                            class="btn btn-default btnDate">1 mês</button>
+                                    </label>
+                                    <label>
+                                        <br />
+                                        <button
+                                            data-date="{{ date('Y-m-d', strtotime('+15 days', strtotime(simpleDateRight()))) }}"
+                                            class="btn btn-default btnDate">15 dias</button>
+                                    </label>
+                                    <label>
+                                        <br />
+                                        <button
+                                            data-date="{{ date('Y-m-d', strtotime('+1 week', strtotime(simpleDateRight()))) }}"
+                                            class="btn btn-default btnDate">1 semana</button>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <form method="GET" id="formSearch">
+                                    <div>
                                         <div class="dataTables_length" id="dataTable_length">
                                             <label>
                                                 Franqueado
@@ -289,12 +311,23 @@
                                                 <button class="btn btn-success" id="buscar">Buscar</button>
                                             </label>
                                         </div>
-                                    </form>
-                                </div>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="row">
-                                <div class="col-sm-12" id="results">
-                                    <h3>Valor total: <span id="totalValue">0</span></h3>
+                            <div class="row" style="margin-top:40px;">
+                                <div class="card text-center col-md-3">
+                                    <p>Valor total</p>
+                                    <h3 style="padding-left:20px;">
+                                        <span id="totalValue">0</span>
+                                    </h3>
+                                </div>
+                                <div class="card text-center col-md-3">
+                                    <p>Tiket médio</p>
+                                    <h3 style="padding-left:20px;">
+                                        <span id="mediumValue">R$0,00</span>
+                                    </h3>
+                                </div>
+                                <div class="col-sm-6" id="results">
                                     <div id="chartContainer" style="height: 370px; max-width:100%; margin: 0px auto;">
                                     </div>
                                 </div>
@@ -337,11 +370,14 @@
                 email: "{{ Auth::User()->email }}",
                 dateStart: "{{ $date_start }}",
                 dateEnd: "{{ $date_end }}",
+                inputDateEnd: $('input[name="date_end"]'),
                 user: "{{ $user }}",
                 payments_form: "{{ $payments_form }}",
                 chartContainer: 'chartContainer',
                 chartContainerMoney: 'chartContainerMoney',
                 paymentsForm: $('#payments_form'),
+                btnDate: $('.btnDate'),
+                form: $('#formSearch'),
                 months() {
                     let start = new Date(this.dateStart);
                     start.setDate(start.getDate() + 1);
@@ -415,6 +451,34 @@
                         data: data
                     });
                     chart.render();
+                },
+                verifySearchDateEnd() {
+                    for (let index = 0; index < soares_sales.btnDate.length; index++) {
+                        const element = soares_sales.btnDate[index];
+                        element.classList.remove('btn-primary');
+                        element.classList.add('btn-default');
+                        if(this.dateEnd == element.dataset.date)
+                        {
+                            element.classList.remove('btn-default');
+                            element.classList.add('btn-primary');
+                        }
+                    }
+                },
+                clickInInterval() {
+                    this.verifySearchDateEnd();
+                    this.btnDate.click(function(e) {
+                        e.preventDefault();
+                        for (let index = 0; index < soares_sales.btnDate.length; index++) {
+                            const element = soares_sales.btnDate[index];
+                            element.classList.remove('btn-primary');
+                            element.classList.add('btn-default');
+                        }
+                        let date = this.dataset.date;
+                        this.classList.remove('btn-default');
+                        this.classList.add('btn-primary');
+                        soares_sales.inputDateEnd.val(date);
+                        soares_sales.form.submit();
+                    });
                 },
                 ajax() {
                     $.ajax({
@@ -532,7 +596,8 @@
                             let data = [];
                             let html = '<option value="%">Todos</option>';
                             for (const key in e) {
-                                html+= '<option value="'+e[key].id+'">'+e[key].email+'</option>';
+                                html += '<option value="' + e[key].id + '">' + e[key].email +
+                                    '</option>';
                             }
                             this.selectUser.html(html);
                         },
@@ -548,7 +613,8 @@
                             let data = [];
                             let html = '<option value="%">Todos</option>';
                             for (const key in e) {
-                                html += '<option value="'+e[key].id+'">'+e[key].name+'</option>';
+                                html += '<option value="' + e[key].id + '">' + e[key].name +
+                                    '</option>';
                             }
                             this.paymentsForm.html(html);
                         },
@@ -560,22 +626,22 @@
                     this.ajaxByStatus();
                 },
                 getMoneyByDateAndStatusInterval() {
-                    this.url = "/api/total_by_interval?mounths=" + this.months()
-                    +"&payments_form=" + this.payments_form
-                    +"&user_id=" +this.selectUser.val();
+                    this.url = "/api/total_by_interval?mounths=" + this.months() +
+                        "&payments_form=" + this.payments_form +
+                        "&user_id=" + this.selectUser.val();
                     this.ajaxByDateAndStatus();
                 },
                 getMoneyByDateAndMoneyInterval() {
-                    this.url = "/api/total_by_payment_interval?mounths=" + this.months();
-                    +"&payments_form=" + this.payments_form
-                    +"&user_id=" +this.selectUser.val();
+                    this.url = "/api/total_by_payment_interval?mounths=" + this.months(); +
+                    "&payments_form=" + this.payments_form +
+                        "&user_id=" + this.selectUser.val();
                     this.ajaxByDateAndMoney();
                 },
                 getMoneyOfYear() {
                     this.url = "/api/total?date_start=" + this.dateStart +
-                    "&date_end=" + this.dateEnd +
-                    "&payments_form=" + this.payments_form
-                    +"&user_id=" +this.selectUser.val();
+                        "&date_end=" + this.dateEnd +
+                        "&payments_form=" + this.payments_form +
+                        "&user_id=" + this.selectUser.val();
                     this.ajax();
                 },
                 getUsers() {
@@ -588,6 +654,7 @@
                     this.getMoneyOfYear();
                     this.ajaxGetPaymentsForm();
                     this.getUsers();
+                    this.clickInInterval();
                     //this.getByStatus();
                 }
 
