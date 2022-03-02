@@ -14,7 +14,14 @@ class MoneyController extends Controller
         ? $request->date_start : date('Y-m-d', strtotime('-1 month'));
         $dateEnd = !empty($request->date_end)
         ? $request->date_end : date('Y-m-d');
-        return TotalMoneyByDateServices::getTotal($dateStart, $dateEnd);
+        $paymentsForm = !empty($request->payments_form) ? $request->payments_form : '%';
+        $userId = !empty($request->user_id) ? $request->user_id : '%';
+        return TotalMoneyByDateServices::getTotal(
+            $dateStart,
+            $dateEnd,
+            $paymentsForm,
+            $userId
+        );
     }
 
     public function totalMounth(Request $request)
@@ -29,7 +36,15 @@ class MoneyController extends Controller
             exit;
         }
         $dates = explode(',',$request->mounths);
-        return TotalMoneyByDateServices::getTotalByInterval($dates[0], $dates[1]);
+        $paymentsForm = !empty($request->payments_form) ? $request->payments_form : '%';
+        $userId = !empty($request->user_id) ? $request->user_id : '%';
+        return TotalMoneyByDateServices::getTotalByInterval(
+            $dates[0],
+            $dates[1],
+            'status',
+            $paymentsForm,
+            $userId
+        );
     }
 
     public function totalByPaymentInterval(Request $request)
@@ -38,7 +53,15 @@ class MoneyController extends Controller
         {
             exit;
         }
+        $paymentsForm = !empty($request->payments_form) ? $request->payments_form : '%';
+        $userId = !empty($request->user_id) ? $request->user_id : '%';
         $dates = explode(',',$request->mounths);
-        return TotalMoneyByDateServices::getTotalByInterval($dates[0], $dates[1],'payment_form');
+        return TotalMoneyByDateServices::getTotalByInterval(
+            $dates[0],
+            $dates[1],
+            'payment_form',
+            $paymentsForm,
+            $userId
+        );
     }
 }

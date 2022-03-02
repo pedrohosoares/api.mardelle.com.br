@@ -17,10 +17,12 @@ class SaleController extends Controller
         $dateEnd = !empty($request->date_end)
         ? $request->date_end : date('Y-m-d');
         $user = !empty($request->user) ? $request->user : "";
+        $paymentsForm = !empty($request->payments_form) ? $request->payments_form : "";
         return view('dashboard.sales.index', [
             'date_start' => $dateStart,
             'date_end' => $dateEnd,
-            'user' => $user
+            'user' => $user,
+            'payments_form' => $paymentsForm
         ]);
     }
 

@@ -23,19 +23,19 @@ class Trayother extends Model
         'coupon_discount',
         'status',
         'total',
-        'json'
+        'json',
     ];
 
     protected $casts = [
-        'json' => 'array'
+        'json' => 'array',
     ];
 
-    public function traycustomer() : BelongsTo
+    public function traycustomer(): BelongsTo
     {
-        return $this->belongsTo(Traycustomer::class,'customer_id','customer_id');
+        return $this->belongsTo(Traycustomer::class, 'customer_id', 'customer_id');
     }
 
-    public function afiliate() : BelongsToMany
+    public function afiliate(): BelongsToMany
     {
         return $this->belongsToMany(
             Trayother::class,
@@ -43,5 +43,20 @@ class Trayother extends Model
             'trayother_id',
             'affiliate_id'
         );
+    }
+
+    public function scopeGetTotalOrders(
+        object $query,
+        array $paymentsForm,
+        string $dateStart,
+        string $dateEnd
+    ) {
+        if (!empty($paymentsForm)) {
+            $query = $query->whereIn('payment_form', $paymentsForm);
+        }
+        if (!empty($dateStart) and !empty($dateEnd)) {
+            $query = $query->whereBetween('date', [$dateStart, $dateEnd]);
+        }
+        return $query->sum('total');
     }
 }

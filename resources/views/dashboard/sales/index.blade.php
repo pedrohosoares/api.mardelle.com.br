@@ -255,15 +255,6 @@
                     <div class="table-responsive">
                         <div id="dataTable_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">
                             <div class="row">
-                                <!--
-                                                                <div class="col-sm-12">
-                                                                    <div id="dataTable_filter" class="dataTables_filter">
-                                                                        <label>
-                                                                            <button id="download_excel" class="btn btn-primary">BAIXAR (CSV)</button>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                            -->
                                 <div class="col-sm-12">
                                     <form method="GET">
                                         <div class="dataTables_length" id="dataTable_length">
@@ -271,7 +262,7 @@
                                                 Franqueado
                                                 <br />
                                                 <select name="user" class="form-control input-sm" id="selectUser">
-                                                    <option value="">Todos</option>
+                                                    <option value="%">Todos</option>
                                                 </select>
                                             </label>
                                             <label>
@@ -347,6 +338,7 @@
                 dateStart: "{{ $date_start }}",
                 dateEnd: "{{ $date_end }}",
                 user: "{{ $user }}",
+                payments_form: "{{ $payments_form }}",
                 chartContainer: 'chartContainer',
                 chartContainerMoney: 'chartContainerMoney',
                 paymentsForm: $('#payments_form'),
@@ -568,15 +560,22 @@
                     this.ajaxByStatus();
                 },
                 getMoneyByDateAndStatusInterval() {
-                    this.url = "/api/total_by_interval?mounths=" + this.months();
+                    this.url = "/api/total_by_interval?mounths=" + this.months()
+                    +"&payments_form=" + this.payments_form
+                    +"&user_id=" +this.selectUser.val();
                     this.ajaxByDateAndStatus();
                 },
                 getMoneyByDateAndMoneyInterval() {
                     this.url = "/api/total_by_payment_interval?mounths=" + this.months();
+                    +"&payments_form=" + this.payments_form
+                    +"&user_id=" +this.selectUser.val();
                     this.ajaxByDateAndMoney();
                 },
                 getMoneyOfYear() {
-                    this.url = "/api/total?date_start=" + this.dateStart + "&date_end=" + this.dateEnd;
+                    this.url = "/api/total?date_start=" + this.dateStart +
+                    "&date_end=" + this.dateEnd +
+                    "&payments_form=" + this.payments_form
+                    +"&user_id=" +this.selectUser.val();
                     this.ajax();
                 },
                 getUsers() {

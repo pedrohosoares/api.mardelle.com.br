@@ -36,7 +36,10 @@ class Traycustomer extends Model
         object $query,
         array $zipCodes,
         string $dateStart,
-        string $dateEnd): float {
+        string $dateEnd,
+        string $paymentsForm,
+        string $userId
+        ): float {
         if (empty($zipCodes)) {
             return 0.00;
         }
@@ -51,9 +54,10 @@ class Traycustomer extends Model
         if ($customers->count() === 0) {
             return 0.00;
         }
-        $total = ($customers)->map(function ($customer) use ($dateStart, $dateEnd) {
+        $total = ($customers)->map(function ($customer) use ($dateStart, $dateEnd, $paymentsForm) {
             return $customer
                 ->trayother
+                ->whereIn('payment_form',$paymentsForm)
                 ->whereBetween('date', [$dateStart, $dateEnd])
                 ->sum('total');
         })[0];
@@ -108,7 +112,10 @@ class Traycustomer extends Model
         array $zipCodes,
         string $dateStart,
         string $dateEnd,
-        string $groupBy = 'status') {
+        string $groupBy = 'status',
+        string $paymentsForm,
+        string $userId
+        ) {
         if (empty($zipCodes)) {
             return 0.00;
         }
@@ -123,10 +130,16 @@ class Traycustomer extends Model
         if ($customers->count() === 0) {
             return [];
         }
-        $orders = ($customers)->map(function ($customer) use ($dateStart, $dateEnd, $groupBy) {
+        $orders = ($customers)->map(function ($customer) use (
+            $dateStart,
+            $dateEnd,
+            $groupBy,
+            $paymentsForm,
+            $userId) {
             return $customer
                 ->trayother
                 ->whereBetween('date', [$dateStart, $dateEnd])
+                ->whereIn('payment_form',$paymentsForm)
                 ->groupBy($groupBy);
         })[0];
         return TotalMoneyDateCompleteSupport::sumTotalByStatusAndDate($orders);

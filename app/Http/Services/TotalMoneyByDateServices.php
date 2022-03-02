@@ -10,14 +10,21 @@ use App\Models\User;
 class TotalMoneyByDateServices
 {
 
-    public static function getTotal(string $dateStart, string $dateEnd): float
+    public static function getTotal(
+        string $dateStart,
+        string $dateEnd,
+        string $paymentsForm,
+        string $userId
+        ): float
     {
         $zipCodesUser = User::getZipCodesByUser()->toArray();
         $zipCodes = ZipCodeOrganizeSupport::resetIndexArrayZipCode($zipCodesUser);
         $total = Traycustomer::retriveTotalMoneyPay(
             $zipCodes,
             $dateStart,
-            $dateEnd
+            $dateEnd,
+            $paymentsForm,
+            $userId
         );
         return $total;
     }
@@ -42,7 +49,13 @@ class TotalMoneyByDateServices
         return $total;
     }
 
-    public static function getTotalByInterval(string $dateStart, string $dateEnd, string $groupBy = 'status')
+    public static function getTotalByInterval(
+        string $dateStart,
+        string $dateEnd,
+        string $groupBy = 'status',
+        string $paymentsForm,
+        string $userId
+        )
     {
         $zipCodesUser = User::getZipCodesByUser()->toArray();
         $zipCodes = ZipCodeOrganizeSupport::resetIndexArrayZipCode($zipCodesUser);
@@ -50,7 +63,9 @@ class TotalMoneyByDateServices
             $zipCodes,
             $dateStart,
             $dateEnd,
-            $groupBy
+            $groupBy,
+            $paymentsForm,
+            $userId
         );
 
     }
