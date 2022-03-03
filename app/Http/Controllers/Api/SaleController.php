@@ -8,13 +8,55 @@ use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
-    public function salesByPaymentForm() : object
+    public function salesByPaymentForm(Request $request)
     {
-        return Trayother::get()->groupBy('payment_form');
+        return Trayother::getOrdersByUserTotalPaymentForm(
+            $request->user,
+            $request->date_start,
+            $request->date_end,
+            $request->payments_form
+        );
     }
 
-    public function salesByStatus() : object
+    public function salesByStatus(Request $request)
     {
-        return Trayother::get()->groupBy('status');
+        return Trayother::getOrdersByUserTotalStatus(
+            $request->user,
+            $request->date_start,
+            $request->date_end,
+            $request->payments_form
+        );
     }
+
+    public function getOrdersByUserTotalSale(Request $request)
+    {
+        return Trayother::getOrdersByUserTotalSale(
+            $request->user,
+            $request->date_start,
+            $request->date_end,
+            $request->payments_form
+        );
+    }
+
+    public function getMediumTicket(Request $request)
+    {
+        return Trayother::getOrdersByUserTicketMedium(
+            $request->user,
+            $request->date_start,
+            $request->date_end,
+            $request->payments_form
+        );
+    }
+
+    public function getOrdersByUserId(Request $request)
+    {
+        return Trayother::getOrdersByUserId(
+            $request->user,
+            $request->date_start,
+            $request->date_end,
+            $request->payments_form
+        );
+    }
+
+
 }

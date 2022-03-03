@@ -14,8 +14,8 @@ class MoneyController extends Controller
         ? $request->date_start : date('Y-m-d', strtotime('-1 month'));
         $dateEnd = !empty($request->date_end)
         ? $request->date_end : date('Y-m-d');
-        $paymentsForm = !empty($request->payments_form) ? $request->payments_form : '%';
-        $userId = !empty($request->user_id) ? $request->user_id : '%';
+        $paymentsForm = !empty($request->payments_form) ? $request->payments_form : '';
+        $userId = !empty($request->user_id) ? $request->user_id : '';
         return TotalMoneyByDateServices::getTotal(
             $dateStart,
             $dateEnd,

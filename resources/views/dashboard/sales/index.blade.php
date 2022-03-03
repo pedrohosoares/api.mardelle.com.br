@@ -284,7 +284,7 @@
                                                 Franqueado
                                                 <br />
                                                 <select name="user" class="form-control input-sm" id="selectUser">
-                                                    <option value="%">Todos</option>
+                                                    <option value="">Todos</option>
                                                 </select>
                                             </label>
                                             <label>
@@ -304,7 +304,7 @@
                                                 <br />
                                                 <select class="form-control input-sm" name="payments_form"
                                                     id="payments_form">
-                                                    <option value="%">Todos</option>
+                                                    <option value="">Todos</option>
                                                 </select>
                                             </label>
                                             <label>
@@ -366,6 +366,7 @@
                 totalValue: $('span#totalValue'),
                 divMonthsMoney: $('#divMonthsMoney'),
                 selectUser: $('#selectUser'),
+                mediumValue: $('#mediumValue'),
                 user_id: "{{ Auth::User()->id }}",
                 email: "{{ Auth::User()->email }}",
                 dateStart: "{{ $date_start }}",
@@ -480,13 +481,29 @@
                         soares_sales.form.submit();
                     });
                 },
-                ajax() {
+                ajaxTotalValue() {
                     $.ajax({
-                        url: this.url,
+                        url: "/api/total/payments?date_start=" + this.dateStart +
+                        "&date_end=" + this.dateEnd +
+                        "&payments_form=" + this.payments_form +
+                        "&user=" + this.selectUser.val(),
                         type: 'GET',
                         success: (e) => {
-                            e = "R$" + parseFloat(e).toFixed(2).replace('.', ',');
+                            e = "R$" + parseFloat(e[0].total).toFixed(2).replace('.', ',');
                             this.totalValue.text(e);
+                        }
+                    });
+                },
+                ajaxMediumTicket() {
+                    $.ajax({
+                        url: "/api/total/medium_ticket?date_start=" + this.dateStart +
+                        "&date_end=" + this.dateEnd +
+                        "&payments_form=" + this.payments_form +
+                        "&user=" + this.selectUser.val(),
+                        type: 'GET',
+                        success: (e) => {
+                            e = "R$" + parseFloat(e[0].total).toFixed(2).replace('.', ',');
+                            this.mediumValue.text(e);
                         }
                     });
                 },
@@ -495,6 +512,7 @@
                         url: this.url,
                         type: 'GET',
                         success: (object) => {
+                            console.log(object);
                             let noExistData = true;
                             for (const status in object) {
                                 noExistData = false;
@@ -594,7 +612,7 @@
                         success: (e) => {
                             this.selectUser.val('');
                             let data = [];
-                            let html = '<option value="%">Todos</option>';
+                            let html = '<option value="">Todos</option>';
                             for (const key in e) {
                                 html += '<option value="' + e[key].id + '">' + e[key].email +
                                     '</option>';
@@ -611,9 +629,9 @@
                         success: (e) => {
                             this.paymentsForm.val('');
                             let data = [];
-                            let html = '<option value="%">Todos</option>';
+                            let html = '<option value="">Todos</option>';
                             for (const key in e) {
-                                html += '<option value="' + e[key].id + '">' + e[key].name +
+                                html += '<option value="' + e[key].name + '">' + e[key].name +
                                     '</option>';
                             }
                             this.paymentsForm.html(html);
@@ -626,9 +644,10 @@
                     this.ajaxByStatus();
                 },
                 getMoneyByDateAndStatusInterval() {
-                    this.url = "/api/total_by_interval?mounths=" + this.months() +
+                    this.url = "/api/all_sales?date_start=" + this.dateStart +
+                        "&date_end=" + this.dateEnd +
                         "&payments_form=" + this.payments_form +
-                        "&user_id=" + this.selectUser.val();
+                        "&user=" + this.selectUser.val();
                     this.ajaxByDateAndStatus();
                 },
                 getMoneyByDateAndMoneyInterval() {
@@ -638,11 +657,7 @@
                     this.ajaxByDateAndMoney();
                 },
                 getMoneyOfYear() {
-                    this.url = "/api/total?date_start=" + this.dateStart +
-                        "&date_end=" + this.dateEnd +
-                        "&payments_form=" + this.payments_form +
-                        "&user_id=" + this.selectUser.val();
-                    this.ajax();
+                    this.ajaxTotalValue();
                 },
                 getUsers() {
                     this.url = "/api/franqueados";
@@ -655,6 +670,7 @@
                     this.ajaxGetPaymentsForm();
                     this.getUsers();
                     this.clickInInterval();
+                    this.ajaxMediumTicket();
                     //this.getByStatus();
                 }
 
