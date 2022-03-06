@@ -258,7 +258,7 @@
             autocomplete="off">
             <!-- PUT Method if we are editing -->
             @csrf
-            @if (isset($dataTypeContent))
+            @if (!empty($dataTypeContent->name))
                 <input type="hidden" name="_method" value="PUT">
             @else
                 <input type="hidden" name="_method" value="POST">

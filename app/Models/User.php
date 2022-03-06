@@ -64,8 +64,8 @@ class User extends \TCG\Voyager\Models\User
     public function scopeRetrieveMailAndIdFranqueado(object $query) : array
     {
         return $query->select(['id','name','email'])
-        //->where('id',getUserLoggedId())
-        ->where('role_id',self::FRANQUEADO)
+        ->where('id',getUserLoggedId())
+        //->where('role_id',self::FRANQUEADO)
         ->get()
         ->toArray();
     }

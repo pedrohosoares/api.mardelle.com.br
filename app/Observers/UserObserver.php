@@ -46,6 +46,10 @@ class UserObserver
      */
     public function updating(User $user)
     {
+        if(empty($user->role_id)){
+            unset($user->role_id);
+        }
+        return $user;
     }
 
     /**

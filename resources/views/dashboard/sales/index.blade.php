@@ -258,19 +258,19 @@
                                 <div>
                                     <label>
                                         <br />
-                                        <button
+                                        <button data-now="{{ date('Y-m-d', strtotime(simpleDateRight())) }}"
                                             data-date="{{ date('Y-m-d', strtotime('+1 month', strtotime(simpleDateRight()))) }}"
                                             class="btn btn-default btnDate">1 mês</button>
                                     </label>
                                     <label>
                                         <br />
-                                        <button
+                                        <button data-now="{{ date('Y-m-d', strtotime(simpleDateRight())) }}"
                                             data-date="{{ date('Y-m-d', strtotime('+15 days', strtotime(simpleDateRight()))) }}"
                                             class="btn btn-default btnDate">15 dias</button>
                                     </label>
                                     <label>
                                         <br />
-                                        <button
+                                        <button data-now="{{ date('Y-m-d', strtotime(simpleDateRight())) }}"
                                             data-date="{{ date('Y-m-d', strtotime('+1 week', strtotime(simpleDateRight()))) }}"
                                             class="btn btn-default btnDate">1 semana</button>
                                     </label>
@@ -349,7 +349,8 @@
 
                                         </div>
                                         <br />
-                                        <div id="status_pagamentos" style="height: 370px; max-width:100%; margin: 0px auto;">
+                                        <div id="status_pagamentos"
+                                            style="height: 370px; max-width:100%; margin: 0px auto;">
 
                                         </div>
                                     </div>
@@ -398,6 +399,7 @@
                 email: "{{ Auth::User()->email }}",
                 dateStart: "{{ $date_start }}",
                 dateEnd: "{{ $date_end }}",
+                inputDateStart: $('input[name="date_start"]'),
                 inputDateEnd: $('input[name="date_end"]'),
                 user: "{{ $user }}",
                 payments_form: "{{ $payments_form }}",
@@ -485,7 +487,7 @@
                 },
                 chartPorStatus(object) {
                     let dataPoints = [];
-                    object.forEach((v)=>{
+                    object.forEach((v) => {
                         dataPoints.push({
                             y: parseFloat(v.total),
                             name: v.status
@@ -531,11 +533,17 @@
                             element.classList.remove('btn-primary');
                             element.classList.add('btn-default');
                         }
+                        let now = this.dataset.now;
                         let date = this.dataset.date;
+                        let newDate = now.replace(/-/g, ',');
+                        newDate = new Date(newDate);
+                        newDate = newDate.toLocaleDateString('pt-BR').split('/').reverse().join('-');
+                        soares_sales.inputDateStart.val(newDate);
                         this.classList.remove('btn-default');
                         this.classList.add('btn-primary');
+                        soares_sales.inputDateStart.val(now);
                         soares_sales.inputDateEnd.val(date);
-                        soares_sales.form.submit();
+                        //soares_sales.form.submit();
                     });
                 },
                 ajaxTotalValue() {
@@ -625,9 +633,9 @@
                             this.selectUser.val('');
                             let data = [];
                             let html = '<option value="">Todos Franqueados</option>';
-                            if(soares_sales.user == 'no'){
+                            if (soares_sales.user == 'no') {
                                 html += '<option value="no" selected>Nenhum Franqueado</option>';
-                            }else{
+                            } else {
                                 html += '<option value="no">Nenhum Franqueado</option>';
                             }
                             for (const key in e) {
