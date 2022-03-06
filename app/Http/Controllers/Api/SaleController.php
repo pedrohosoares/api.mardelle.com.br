@@ -18,6 +18,9 @@ class SaleController extends Controller
                 $request->payments_form
             );
         } else {
+            if(!getUserLoggedIsAdmin()){
+                $request->user =  auth()->user()->id;
+            }
             return Trayother::getOrdersByUserTotalPaymentForm(
                 $request->user,
                 $request->date_start,
@@ -37,6 +40,9 @@ class SaleController extends Controller
                 $request->payments_form
             );
         } else {
+            if(!getUserLoggedIsAdmin()){
+                $request->user =  auth()->user()->id;
+            }
             return Trayother::getOrdersByUserTotalStatus(
                 $request->user,
                 $request->date_start,
@@ -56,6 +62,9 @@ class SaleController extends Controller
                 $request->payments_form
             );
         } else {
+            if(!getUserLoggedIsAdmin()){
+                $request->user =  auth()->user()->id;
+            }
             return Trayother::getOrdersByUserTotalSale(
                 $request->user,
                 $request->date_start,
@@ -75,6 +84,9 @@ class SaleController extends Controller
                 $request->payments_form
             );
         } else {
+            if(!getUserLoggedIsAdmin()){
+                $request->user =  auth()->user()->id;
+            }
             return Trayother::getOrdersByUserTicketMedium(
                 $request->user,
                 $request->date_start,
@@ -94,6 +106,9 @@ class SaleController extends Controller
                 $request->payments_form
             );
         } else {
+            if(!getUserLoggedIsAdmin()){
+                $request->user =  auth()->user()->id;
+            }
             return Trayother::getOrdersByUserId(
                 $request->user,
                 $request->date_start,
@@ -112,6 +127,9 @@ class SaleController extends Controller
                 $request->date_end,
                 $request->payments_form);
         }else{
+            if(!getUserLoggedIsAdmin()){
+                $request->user =  auth()->user()->id;
+            }
             $query = Trayother::getSalesByTotalClients(
                 $request->user,
                 $request->date_start,
@@ -133,6 +151,9 @@ class SaleController extends Controller
                 $request->payments_form
             );
         }else{
+            if(!getUserLoggedIsAdmin()){
+                $request->user =  auth()->user()->id;
+            }
             $query = Trayother::getSalesByTotal(
                 $request->user,
                 $request->date_start,

@@ -500,12 +500,7 @@
                         success: (e) => {
                             this.selectUser.val('');
                             let data = [];
-                            let html = '<option value="">Todos Franqueados</option>';
-                            if(soares_sales.user == 'no'){
-                                html += '<option value="no" selected>Nenhum Franqueado</option>';
-                            }else{
-                                html += '<option value="no">Nenhum Franqueado</option>';
-                            }
+                            let html = '';
                             for (const key in e) {
                                 if (soares_sales.getUser == e[key].id) {
                                     html += '<option selected value="' + e[key].id + '">' + e[key]

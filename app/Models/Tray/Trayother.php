@@ -2,6 +2,7 @@
 
 namespace App\Models\Tray;
 
+use App\Http\Support\TrayortherSupport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,7 +26,7 @@ class Trayother extends Model
         'status',
         'total',
         'json',
-        'user_id'
+        'user_id',
     ];
 
     protected $casts = [
@@ -85,7 +86,6 @@ class Trayother extends Model
         $sql .= " ORDER BY trayothers.date DESC";
         return DB::select($sql);
     }
-
 
     public static function getOrdersByUserIdNoUser(
         $usersId,
@@ -218,7 +218,9 @@ class Trayother extends Model
             $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
         }
         $sql .= " ORDER BY trayothers.date DESC";
-        return DB::select($sql);
+        $sql = DB::select($sql);
+        $sql[0]->total = TrayortherSupport::putZeroValueInResultNull($sql[0]->total);
+        return $sql;
     }
 
     public static function getOrdersByUserTotalSaleNoUser(
@@ -238,7 +240,9 @@ class Trayother extends Model
             $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
         }
         $sql .= " ORDER BY trayothers.date DESC";
-        return DB::select($sql);
+        $sql = DB::select($sql);
+        $sql[0]->total = TrayortherSupport::putZeroValueInResultNull($sql[0]->total);
+        return $sql;
     }
 
     public static function getOrdersByUserTicketMedium(
@@ -261,10 +265,10 @@ class Trayother extends Model
             $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
         }
         $sql .= " ORDER BY trayothers.date DESC";
-        return DB::select($sql);
+        $sql = DB::select($sql);
+        $sql[0]->total = TrayortherSupport::putZeroValueInResultNull($sql[0]->total);
+        return $sql;
     }
-
-
 
     public static function getOrdersByUserTicketMediumNoUser(
         $usersId,
@@ -283,7 +287,9 @@ class Trayother extends Model
             $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
         }
         $sql .= " ORDER BY trayothers.date DESC";
-        return DB::select($sql);
+        $sql = DB::select($sql);
+        $sql[0]->total = TrayortherSupport::putZeroValueInResultNull($sql[0]->total);
+        return $sql;
     }
 
     public static function getSalesByTotalClients(
@@ -306,7 +312,9 @@ class Trayother extends Model
             $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
         }
         $sql .= " GROUP BY traycustomers.customer_id";
-        return DB::select($sql);
+        $sql = DB::select($sql);
+        $sql[0]->total = TrayortherSupport::putZeroValueInResultNull($sql[0]->total);
+        return $sql;
     }
 
     public static function getSalesByTotalClientsNoUser(
@@ -326,7 +334,9 @@ class Trayother extends Model
             $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
         }
         $sql .= " GROUP BY traycustomers.customer_id";
-        return DB::select($sql);
+        $sql = DB::select($sql);
+        $sql[0]->total = TrayortherSupport::putZeroValueInResultNull($sql[0]->total);
+        return $sql;
     }
 
     public static function getSalesByTotal(
@@ -350,8 +360,6 @@ class Trayother extends Model
         }
         return DB::select($sql);
     }
-
-
 
     public static function getSalesByTotalNoUser(
         $usersId,

@@ -34,6 +34,18 @@ if(!function_exists('verifyUserLogged'))
 }
 
 
+
+if(!function_exists('returnUserIDRight'))
+{
+    function returnUserIDRight()
+    {
+        if(!getUserLoggedIsAdmin()){
+            return auth()->user()->id;
+        }
+    }
+}
+
+
 if(!function_exists('redirect404UserNotLogged'))
 {
     function redirect404UserNotLogged()

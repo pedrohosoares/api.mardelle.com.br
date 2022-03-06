@@ -63,11 +63,18 @@ class User extends \TCG\Voyager\Models\User
 
     public function scopeRetrieveMailAndIdFranqueado(object $query) : array
     {
-        return $query->select(['id','name','email'])
-        ->where('id',getUserLoggedId())
-        //->where('role_id',self::FRANQUEADO)
-        ->get()
-        ->toArray();
+        $query = $query->select(['id','name','email']);
+        if(getUserLoggedIsAdmin()){
+            $query = $query->where('role_id',self::FRANQUEADO);
+        }else{
+            $query = $query->where('id',getUserLoggedId());
+        }
+        $query = $query->get()->toArray();
+        if(getUserLoggedIsAdmin()){
+            $query[] = array('id'=>'','name'=>'Todos franqueados','email'=>'Todos franqueados');
+            $query[] = array('id'=>'no','name'=>'Nenhum franqueado','email'=>'Nenhum franqueado');
+        }
+        return $query;
     }
 
     public function customerZipCodes(): BelongsToMany
