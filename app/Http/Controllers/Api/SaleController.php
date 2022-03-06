@@ -10,73 +10,137 @@ class SaleController extends Controller
 {
     public function salesByPaymentForm(Request $request)
     {
-        return Trayother::getOrdersByUserTotalPaymentForm(
-            $request->user,
-            $request->date_start,
-            $request->date_end,
-            $request->payments_form
-        );
+        if ($request->user == 'no') {
+            return Trayother::getOrdersByUserTotalPaymentFormNoUser(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form
+            );
+        } else {
+            return Trayother::getOrdersByUserTotalPaymentForm(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form
+            );
+        }
     }
 
     public function salesByStatus(Request $request)
     {
-        return Trayother::getOrdersByUserTotalStatus(
-            $request->user,
-            $request->date_start,
-            $request->date_end,
-            $request->payments_form
-        );
+        if ($request->user == 'no') {
+            return Trayother::getOrdersByUserTotalStatusNoUser(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form
+            );
+        } else {
+            return Trayother::getOrdersByUserTotalStatus(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form
+            );
+        }
     }
 
     public function getOrdersByUserTotalSale(Request $request)
     {
-        return Trayother::getOrdersByUserTotalSale(
-            $request->user,
-            $request->date_start,
-            $request->date_end,
-            $request->payments_form
-        );
+        if ($request->user == 'no') {
+            return Trayother::getOrdersByUserTotalSaleNoUser(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form
+            );
+        } else {
+            return Trayother::getOrdersByUserTotalSale(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form
+            );
+        }
     }
 
     public function getMediumTicket(Request $request)
     {
-        return Trayother::getOrdersByUserTicketMedium(
-            $request->user,
-            $request->date_start,
-            $request->date_end,
-            $request->payments_form
-        );
+        if ($request->user == 'no') {
+            return Trayother::getOrdersByUserTicketMediumNoUser(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form
+            );
+        } else {
+            return Trayother::getOrdersByUserTicketMedium(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form
+            );
+        }
     }
 
     public function getOrdersByUserId(Request $request)
     {
-        return Trayother::getOrdersByUserId(
-            $request->user,
-            $request->date_start,
-            $request->date_end,
-            $request->payments_form
-        );
+        if ($request->user == 'no') {
+            return Trayother::getOrdersByUserIdNoUser(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form
+            );
+        } else {
+            return Trayother::getOrdersByUserId(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form
+            );
+        }
     }
 
     public function salesByTotalClients(Request $request)
     {
-        $return['total'] = collect(Trayother::getSalesByTotalClients(
-            $request->user,
-            $request->date_start,
-            $request->date_end,
-            $request->payments_form
-        ))->sum('total');
+        if($request->user == 'no'){
+            $query = Trayother::getSalesByTotalClientsNoUser(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form);
+        }else{
+            $query = Trayother::getSalesByTotalClients(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form);
+        }
+        $return['total'] = collect($query)->sum('total');
         return [$return];
     }
 
     public function salesByTotal(Request $request)
     {
-        $return['total'] = collect(Trayother::getSalesByTotal(
-            $request->user,
-            $request->date_start,
-            $request->date_end,
-            $request->payments_form
-        ))->sum('total');
+        if($request->user == 'no')
+        {
+            $query = Trayother::getSalesByTotalNoUser(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form
+            );
+        }else{
+            $query = Trayother::getSalesByTotal(
+                $request->user,
+                $request->date_start,
+                $request->date_end,
+                $request->payments_form
+            );
+        }
+        $return['total'] = collect($query)->sum('total');
         return [$return];
     }
 

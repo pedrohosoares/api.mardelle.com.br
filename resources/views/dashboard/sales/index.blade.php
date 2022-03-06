@@ -543,7 +543,7 @@
                         url: "/api/total/payments?date_start=" + this.dateStart +
                             "&date_end=" + this.dateEnd +
                             "&payments_form=" + this.payments_form +
-                            "&user=" + this.selectUser.val(),
+                            "&user=" + this.user,
                         type: 'GET',
                         success: (e) => {
                             e = "R$" + parseFloat(e[0].total).toFixed(2).replace('.', ',');
@@ -556,7 +556,7 @@
                         url: "/api/total/medium_ticket?date_start=" + this.dateStart +
                             "&date_end=" + this.dateEnd +
                             "&payments_form=" + this.payments_form +
-                            "&user=" + this.selectUser.val(),
+                            "&user=" + this.user,
                         type: 'GET',
                         success: (e) => {
                             e = "R$" + parseFloat(e[0].total).toFixed(2).replace('.', ',');
@@ -586,7 +586,7 @@
                         url: "/api/sales/total/status?date_start=" + this.dateStart +
                             "&date_end=" + this.dateEnd +
                             "&payments_form=" + this.payments_form +
-                            "&user=" + this.selectUser.val(),
+                            "&user=" + this.user,
                         type: 'GET',
                         success: (e) => {
                             this.chartPorStatus(e);
@@ -598,7 +598,7 @@
                         url: "/api/sales/total/sales?date_start=" + this.dateStart +
                             "&date_end=" + this.dateEnd +
                             "&payments_form=" + this.payments_form +
-                            "&user=" + this.selectUser.val(),
+                            "&user=" + this.user,
                         type: 'GET',
                         success: (e) => {
                             this.total_vendas.text(e[0].total);
@@ -610,7 +610,7 @@
                         url: "/api/sales/total/clients?date_start=" + this.dateStart +
                             "&date_end=" + this.dateEnd +
                             "&payments_form=" + this.payments_form +
-                            "&user=" + this.selectUser.val(),
+                            "&user=" + this.user,
                         type: 'GET',
                         success: (e) => {
                             this.total_clientes.text(e[0].total);
@@ -624,7 +624,12 @@
                         success: (e) => {
                             this.selectUser.val('');
                             let data = [];
-                            let html = '<option value="">Todos</option>';
+                            let html = '<option value="">Todos Franqueados</option>';
+                            if(soares_sales.user == 'no'){
+                                html += '<option value="no" selected>Nenhum Franqueado</option>';
+                            }else{
+                                html += '<option value="no">Nenhum Franqueado</option>';
+                            }
                             for (const key in e) {
                                 if (soares_sales.getUser == e[key].id) {
                                     html += '<option selected value="' + e[key].id + '">' + e[key]
@@ -668,7 +673,7 @@
                         url: "/api/sales/total/payment?date_start=" + this.dateStart +
                             "&date_end=" + this.dateEnd +
                             "&payments_form=" + this.payments_form +
-                            "&user=" + this.selectUser.val(),
+                            "&user=" + this.user,
                         type: 'GET',
                         success: (object) => {
                             this.chartMeiosPagamentos(object);
@@ -682,7 +687,7 @@
                     this.url = "/api/all_sales?date_start=" + this.dateStart +
                         "&date_end=" + this.dateEnd +
                         "&payments_form=" + this.payments_form +
-                        "&user=" + this.selectUser.val();
+                        "&user=" + this.user;
                     this.ajaxByDateAndStatus();
                 },
                 getMoneyOfYear() {

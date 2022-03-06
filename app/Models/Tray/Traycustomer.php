@@ -191,4 +191,25 @@ class Traycustomer extends Model
         $sql .= " GROUP BY traycustomers.city,traycustomers.state";
         return DB::select($sql);
     }
+
+    public static function getTotalSalesByAddressNoUser(
+        $usersId,
+        string $dateStart,
+        string $dateEnd,
+        $paymentForm
+    )
+    {
+        $sql = "select CONCAT(traycustomers.city,' - ',traycustomers.state) AS location,SUM(trayothers.total) as total from locations
+        join traycustomers ON NOT traycustomers.zip_code BETWEEN locations.zip_code_start AND locations.zip_code_end
+        join trayothers ON traycustomers.customer_id = trayothers.customer_id
+        AND trayothers.date BETWEEN '{$dateStart}' AND '{$dateEnd}'
+        join user_locations ON user_locations.location_id = locations.id
+        join users ON users.id = user_locations.user_id OR trayothers.user_id = users.id
+        where 1=1";
+        if (!empty($paymentForm)) {
+            $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
+        }
+        $sql .= " GROUP BY traycustomers.city,traycustomers.state";
+        return DB::select($sql);
+    }
 }

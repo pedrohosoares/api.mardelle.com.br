@@ -482,7 +482,7 @@
                         url: "/api/mapsales?date_start=" + this.dateStart +
                             "&date_end=" + this.dateEnd +
                             "&payments_form=" + this.payments_form +
-                            "&user=" + this.selectUser.val(),
+                            "&user=" + this.user,
                         type: 'GET',
                         success: (e) => {
                             this.renderDataLocation(e[0],0);
@@ -500,7 +500,12 @@
                         success: (e) => {
                             this.selectUser.val('');
                             let data = [];
-                            let html = '<option value="">Todos</option>';
+                            let html = '<option value="">Todos Franqueados</option>';
+                            if(soares_sales.user == 'no'){
+                                html += '<option value="no" selected>Nenhum Franqueado</option>';
+                            }else{
+                                html += '<option value="no">Nenhum Franqueado</option>';
+                            }
                             for (const key in e) {
                                 if (soares_sales.getUser == e[key].id) {
                                     html += '<option selected value="' + e[key].id + '">' + e[key]

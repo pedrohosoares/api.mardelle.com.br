@@ -45,7 +45,6 @@ Route::prefix('api')->group(function () {
     Route::get('order_by_status', [ApiOrderController::class, 'orderByStatus']);
     Route::get('/mapsales/{order_id?}', [ApiOrderController::class, 'mapsales']);
 
-
     //Total
     Route::get('sales/total/payment',[ApiSaleController::class,'salesByPaymentForm']);
     Route::get('sales/total/status',[ApiSaleController::class,'salesByStatus']);

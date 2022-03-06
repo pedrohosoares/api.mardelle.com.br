@@ -86,6 +86,28 @@ class Trayother extends Model
         return DB::select($sql);
     }
 
+
+    public static function getOrdersByUserIdNoUser(
+        $usersId,
+        string $dateStart,
+        string $dateEnd,
+        $paymentForm
+    ) {
+        $sql = "select trayothers.date,SUM(trayothers.total) as total from locations
+        join traycustomers ON NOT traycustomers.zip_code BETWEEN locations.zip_code_start AND locations.zip_code_end
+        join trayothers ON traycustomers.customer_id = trayothers.customer_id
+        AND trayothers.date BETWEEN '{$dateStart}' AND '{$dateEnd}'
+        join user_locations ON user_locations.location_id = locations.id
+        join users ON users.id = user_locations.user_id OR trayothers.user_id = users.id
+        where 1=1";
+        if (!empty($paymentForm)) {
+            $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
+        }
+        $sql .= " GROUP BY trayothers.date";
+        $sql .= " ORDER BY trayothers.date DESC";
+        return DB::select($sql);
+    }
+
     public static function getOrdersByUserTotalPaymentForm(
         $usersId,
         string $dateStart,
@@ -103,6 +125,27 @@ class Trayother extends Model
         if (!empty($usersId)) {
             $sql .= " AND users.id = {$usersId}";
         }
+        if (!empty($paymentForm)) {
+            $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
+        }
+        $sql .= " GROUP BY trayothers.payment_form";
+        return DB::select($sql);
+    }
+
+    public static function getOrdersByUserTotalPaymentFormNoUser(
+        $usersId,
+        string $dateStart,
+        string $dateEnd,
+        $paymentForm
+    ) {
+        $sql = "select trayothers.payment_form,sum(trayothers.total) as total,count(trayothers.payment_form) as total_payment_form
+        from locations
+        join traycustomers ON NOT traycustomers.zip_code BETWEEN locations.zip_code_start AND locations.zip_code_end
+        join trayothers ON traycustomers.customer_id = trayothers.customer_id
+        AND trayothers.date BETWEEN '{$dateStart}' AND '{$dateEnd}'
+        join user_locations ON user_locations.location_id = locations.id
+        join users ON users.id = user_locations.user_id OR trayothers.user_id = users.id
+        where 1=1";
         if (!empty($paymentForm)) {
             $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
         }
@@ -134,6 +177,27 @@ class Trayother extends Model
         return DB::select($sql);
     }
 
+    public static function getOrdersByUserTotalStatusNoUser(
+        $usersId,
+        string $dateStart,
+        string $dateEnd,
+        $paymentForm
+    ) {
+        $sql = "select trayothers.status,sum(trayothers.total) as total,count(trayothers.payment_form) as total_payment_form
+        from locations
+        join traycustomers ON NOT traycustomers.zip_code BETWEEN locations.zip_code_start AND locations.zip_code_end
+        join trayothers ON traycustomers.customer_id = trayothers.customer_id
+        AND trayothers.date BETWEEN '{$dateStart}' AND '{$dateEnd}'
+        join user_locations ON user_locations.location_id = locations.id
+        join users ON users.id = user_locations.user_id OR trayothers.user_id = users.id
+        where 1=1";
+        if (!empty($paymentForm)) {
+            $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
+        }
+        $sql .= " GROUP BY trayothers.status";
+        return DB::select($sql);
+    }
+
     public static function getOrdersByUserTotalSale(
         $usersId,
         string $dateStart,
@@ -150,6 +214,26 @@ class Trayother extends Model
         if (!empty($usersId)) {
             $sql .= " AND users.id = {$usersId}";
         }
+        if (!empty($paymentForm)) {
+            $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
+        }
+        $sql .= " ORDER BY trayothers.date DESC";
+        return DB::select($sql);
+    }
+
+    public static function getOrdersByUserTotalSaleNoUser(
+        $usersId,
+        string $dateStart,
+        string $dateEnd,
+        $paymentForm
+    ) {
+        $sql = "select SUM(trayothers.total) as total from locations
+        join traycustomers ON NOT traycustomers.zip_code BETWEEN locations.zip_code_start AND locations.zip_code_end
+        join trayothers ON traycustomers.customer_id = trayothers.customer_id
+        AND trayothers.date BETWEEN '{$dateStart}' AND '{$dateEnd}'
+        join user_locations ON user_locations.location_id = locations.id
+        join users ON users.id = user_locations.user_id OR trayothers.user_id = users.id
+        where 1=1";
         if (!empty($paymentForm)) {
             $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
         }
@@ -182,6 +266,26 @@ class Trayother extends Model
 
 
 
+    public static function getOrdersByUserTicketMediumNoUser(
+        $usersId,
+        string $dateStart,
+        string $dateEnd,
+        $paymentForm
+    ) {
+        $sql = "select SUM(trayothers.total) / COUNT(trayothers.id) AS total from locations
+        join traycustomers ON NOT traycustomers.zip_code BETWEEN locations.zip_code_start AND locations.zip_code_end
+        join trayothers ON traycustomers.customer_id = trayothers.customer_id
+        AND trayothers.date BETWEEN '{$dateStart}' AND '{$dateEnd}'
+        join user_locations ON user_locations.location_id = locations.id
+        join users ON users.id = user_locations.user_id OR trayothers.user_id = users.id
+        where 1=1";
+        if (!empty($paymentForm)) {
+            $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
+        }
+        $sql .= " ORDER BY trayothers.date DESC";
+        return DB::select($sql);
+    }
+
     public static function getSalesByTotalClients(
         $usersId,
         string $dateStart,
@@ -205,6 +309,26 @@ class Trayother extends Model
         return DB::select($sql);
     }
 
+    public static function getSalesByTotalClientsNoUser(
+        $usersId,
+        string $dateStart,
+        string $dateEnd,
+        $paymentForm
+    ) {
+        $sql = "select COUNT(traycustomers.customer_id) as total from locations
+        join traycustomers ON NOT traycustomers.zip_code BETWEEN locations.zip_code_start AND locations.zip_code_end
+        join trayothers ON traycustomers.customer_id = trayothers.customer_id
+        AND trayothers.date BETWEEN '{$dateStart}' AND '{$dateEnd}'
+        join user_locations ON user_locations.location_id = locations.id
+        join users ON users.id = user_locations.user_id OR trayothers.user_id = users.id
+        where 1=1";
+        if (!empty($paymentForm)) {
+            $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
+        }
+        $sql .= " GROUP BY traycustomers.customer_id";
+        return DB::select($sql);
+    }
+
     public static function getSalesByTotal(
         $usersId,
         string $dateStart,
@@ -221,6 +345,27 @@ class Trayother extends Model
         if (!empty($usersId)) {
             $sql .= " AND users.id = {$usersId}";
         }
+        if (!empty($paymentForm)) {
+            $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
+        }
+        return DB::select($sql);
+    }
+
+
+
+    public static function getSalesByTotalNoUser(
+        $usersId,
+        string $dateStart,
+        string $dateEnd,
+        $paymentForm
+    ) {
+        $sql = "select JSON_LENGTH(trayothers.json->>'$.ProductsSold') as total from locations
+        join traycustomers ON NOT traycustomers.zip_code BETWEEN locations.zip_code_start AND locations.zip_code_end
+        join trayothers ON traycustomers.customer_id = trayothers.customer_id
+        AND trayothers.date BETWEEN '{$dateStart}' AND '{$dateEnd}'
+        join user_locations ON user_locations.location_id = locations.id
+        join users ON users.id = user_locations.user_id OR trayothers.user_id = users.id
+        where 1=1";
         if (!empty($paymentForm)) {
             $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
         }
