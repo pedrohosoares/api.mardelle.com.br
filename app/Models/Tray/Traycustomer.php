@@ -6,6 +6,7 @@ use App\Http\Support\TotalMoneyDateCompleteSupport;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Traycustomer extends Model
 {
@@ -165,5 +166,29 @@ class Traycustomer extends Model
         })[0];
         $dates = TotalMoneyDateCompleteSupport::sumMoneyByDateAndStatus($orders);
         return TotalMoneyDateCompleteSupport::completeArrayDateStatusByFirstAtLast($dates, $dateStart, $dateEnd);
+    }
+
+    public static function getTotalSalesByAddress(
+        $usersId,
+        string $dateStart,
+        string $dateEnd,
+        $paymentForm
+    )
+    {
+        $sql = "select CONCAT(traycustomers.city,' - ',traycustomers.state) AS location,SUM(trayothers.total) as total from locations
+        join traycustomers ON traycustomers.zip_code BETWEEN locations.zip_code_start AND locations.zip_code_end
+        join trayothers ON traycustomers.customer_id = trayothers.customer_id
+        AND trayothers.date BETWEEN '{$dateStart}' AND '{$dateEnd}'
+        join user_locations ON user_locations.location_id = locations.id
+        join users ON users.id = user_locations.user_id OR trayothers.user_id = users.id
+        where 1=1";
+        if (!empty($usersId)) {
+            $sql .= " AND users.id = {$usersId}";
+        }
+        if (!empty($paymentForm)) {
+            $sql .= " AND trayothers.payment_form IN ('{$paymentForm}')";
+        }
+        $sql .= " GROUP BY traycustomers.city,traycustomers.state";
+        return DB::select($sql);
     }
 }

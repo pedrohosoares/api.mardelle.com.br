@@ -58,5 +58,26 @@ class SaleController extends Controller
         );
     }
 
+    public function salesByTotalClients(Request $request)
+    {
+        $return['total'] = collect(Trayother::getSalesByTotalClients(
+            $request->user,
+            $request->date_start,
+            $request->date_end,
+            $request->payments_form
+        ))->sum('total');
+        return [$return];
+    }
+
+    public function salesByTotal(Request $request)
+    {
+        $return['total'] = collect(Trayother::getSalesByTotal(
+            $request->user,
+            $request->date_start,
+            $request->date_end,
+            $request->payments_form
+        ))->sum('total');
+        return [$return];
+    }
 
 }

@@ -3,9 +3,13 @@
 namespace App\Providers;
 
 use App\Models\Location;
+use App\Models\Tray\Affiliate;
 use App\Models\Tray\Traycustomer;
+use App\Models\User;
+use App\Observers\AffiliateObserver;
 use App\Observers\CustomerTrayObserver;
 use App\Observers\LocationObserver;
+use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -33,5 +37,7 @@ class EventServiceProvider extends ServiceProvider
     {
         Traycustomer::observe(CustomerTrayObserver::class);
         Location::observe(LocationObserver::class);
+        Affiliate::observe(AffiliateObserver::class);
+        User::observe(UserObserver::class);
     }
 }

@@ -8,10 +8,12 @@ class OrderSupport
     {
         $order = $order['Order'];
         $order['status'] = $order['status'];
+        $order['payment_form'] = !isset($order['payment_form']) ? $order['payment_method'] : $order['payment_form'];
         $order['order_id'] = $order['id'];
         $order['payment_date'] = $order['payment_date'] == '0000-00-00' ? null : $order['payment_date'];
         $order['date'] = $order['date'] == '0000-00-00' ? null : $order['date'];
         $order['json'] = $order;
+        $order['user_id'] = $order['user_id'];
         return $order;
     }
 

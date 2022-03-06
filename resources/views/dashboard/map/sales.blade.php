@@ -236,8 +236,8 @@
 
 @section('page_header')
     <h1 class="page-title">
-        <i class="voyager-settings">
-        </i> {{ __('Vendas') }}
+        <i class="voyager-world">
+        </i> {{ __('Mapa de Vendas') }}
     </h1>
 @stop
 
@@ -316,60 +316,43 @@
                             </div>
                             <br />
                             <div class="row">
-                                <div class="card text-center col-md-3">
-                                    <p>Valor total</p>
+                                <p>Regiões com mais vendas</p>
+                            </div>
+                            <div class="row">
+                                <div class="card text-center col-md-3" data-location="1">
+                                    <p>Nenhum</p>
                                     <h3 style="padding-left:20px;">
-                                        <span id="totalValue">0</span>
+                                        <span>0</span>
                                     </h3>
                                 </div>
-                                <div class="card text-center col-md-3">
-                                    <p>Ticket médio</p>
+                                <div class="card text-center col-md-3" data-location="2">
+                                    <p>Nenhum</p>
                                     <h3 style="padding-left:20px;">
-                                        <span id="mediumValue">R$0,00</span>
+                                        <span>0</span>
                                     </h3>
                                 </div>
-                                <div class="card text-center col-md-3">
-                                    <p>Total de clientes</p>
+                                <div class="card text-center col-md-3" data-location="3">
+                                    <p>Nenhum</p>
                                     <h3 style="padding-left:20px;">
-                                        <span id="total_clientes">0</span>
+                                        <span>0</span>
                                     </h3>
                                 </div>
-                                <div class="card text-center col-md-3">
-                                    <p>Produtos Vendidos</p>
+                                <div class="card text-center col-md-3" data-location="4">
+                                    <p>Nenhum</p>
                                     <h3 style="padding-left:20px;">
-                                        <span id="total_vendas">0</span>
+                                        <span>0</span>
                                     </h3>
                                 </div>
                             </div>
+                            <br />
                             <div class="row" style="margin-top:40px;">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <div class="card text-center col-md-12">
                                         <br />
-                                        <div id="meios_pagamentos" style="height: 370px; max-width:100%; margin: 0px auto;">
-
-                                        </div>
-                                        <br />
-                                        <div id="status_pagamentos" style="height: 370px; max-width:100%; margin: 0px auto;">
+                                        <div id="status_pagamentos" style="height: 570px; max-width:100%; margin: 0px auto;">
 
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-sm-6" id="results">
-                                    <br />
-                                    <div id="chartContainer" style="height: 370px; max-width:100%; margin: 0px auto;">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-
-                                </div>
-                            </div>
-                            <div class="row" class="justify-content-center">
-                                <div class="col-sm-6" id="divMonthsMoney">
-
                                 </div>
                             </div>
                         </div>
@@ -429,73 +412,19 @@
                     newDate.push(dates[dates.length - 1].split('/').reverse().join('-'));
                     return newDate.join(',');
                 },
-                chart() {
-                    chart = new CanvasJS.Chart(this.chartContainer, {
-                        animationEnabled: true,
-                        title: {
-                            text: "Vendas pelo tempo"
-                        },
-                        axisY: {
-                            title: "Vendas em R$",
-                            valueFormatString: "#0,,.",
-                            suffix: "mn",
-                            prefix: "R$",
-                        },
-                        data: [{
-                            type: "splineArea",
-                            color: "rgba(54,158,173,.7)",
-                            markerSize: 5,
-                            yValueFormatString: "R$#,##0.##",
-                            dataPoints: this.dataPoints
-                        }]
-                    });
-                    chart.render();
-                },
-                chartMeiosPagamentos(object) {
-                    let newObject = [];
-                    object.forEach((v) => {
-                        newObject.push({
-                            y: parseFloat(v.total),
-                            label: v.payment_form
-                        });
-                    });
-                    chart = new CanvasJS.Chart(this.meios_pagamentos, {
-                        animationEnabled: true,
-
-                        title: {
-                            text: "Meios de pagamentos"
-                        },
-                        axisX: {
-                            interval: 1
-                        },
-                        axisY2: {
-                            interlacedColor: "rgba(1,77,101,.2)",
-                            gridColor: "rgba(1,77,101,.1)",
-                            title: "Valores em R$"
-                        },
-                        data: [{
-                            type: "bar",
-                            name: "companies",
-                            axisYType: "secondary",
-                            color: "#014D65",
-                            dataPoints: newObject
-                        }]
-                    });
-                    chart.render();
-                },
-                chartPorStatus(object) {
+                chartPorLocalizacao(object) {
                     let dataPoints = [];
                     object.forEach((v)=>{
                         dataPoints.push({
                             y: parseFloat(v.total),
-                            name: v.status
+                            name: v.location
                         });
                     });
                     const chart = new CanvasJS.Chart(this.status_pagamentos, {
                         exportEnabled: true,
                         animationEnabled: true,
                         title: {
-                            text: "Status dos pagamentos"
+                            text: "Mapa de Vendas"
                         },
                         legend: {
                             cursor: "pointer",
@@ -538,82 +467,29 @@
                         soares_sales.form.submit();
                     });
                 },
-                ajaxTotalValue() {
+                renderDataLocation(values,index)
+                {
+                    if(values == undefined)
+                    {
+                        return;
+                    }
+                    index++;
+                    $('div[data-location="'+index+'"] p').text(values.location);
+                    $('div[data-location="'+index+'"] h3 span').text("R$"+values.total.replace('.',','));
+                },
+                ajaxByLocalizacao() {
                     $.ajax({
-                        url: "/api/total/payments?date_start=" + this.dateStart +
+                        url: "/api/mapsales?date_start=" + this.dateStart +
                             "&date_end=" + this.dateEnd +
                             "&payments_form=" + this.payments_form +
                             "&user=" + this.selectUser.val(),
                         type: 'GET',
                         success: (e) => {
-                            e = "R$" + parseFloat(e[0].total).toFixed(2).replace('.', ',');
-                            this.totalValue.text(e);
-                        }
-                    });
-                },
-                ajaxMediumTicket() {
-                    $.ajax({
-                        url: "/api/total/medium_ticket?date_start=" + this.dateStart +
-                            "&date_end=" + this.dateEnd +
-                            "&payments_form=" + this.payments_form +
-                            "&user=" + this.selectUser.val(),
-                        type: 'GET',
-                        success: (e) => {
-                            e = "R$" + parseFloat(e[0].total).toFixed(2).replace('.', ',');
-                            this.mediumValue.text(e);
-                        }
-                    });
-                },
-                ajaxByDateAndStatus() {
-                    $.ajax({
-                        url: this.url,
-                        type: 'GET',
-                        success: (object) => {
-                            object.forEach(function(v, i) {
-                                soares_sales.dataPoints.push({
-                                    x: new Date(v.date),
-                                    y: parseInt(v.total.replace('.', ''))
-                                })
-                            });
-                        },
-                        complete: (e) => {
-                            this.chart();
-                        }
-                    });
-                },
-                ajaxByStatus() {
-                    $.ajax({
-                        url: "/api/sales/total/status?date_start=" + this.dateStart +
-                            "&date_end=" + this.dateEnd +
-                            "&payments_form=" + this.payments_form +
-                            "&user=" + this.selectUser.val(),
-                        type: 'GET',
-                        success: (e) => {
-                            this.chartPorStatus(e);
-                        }
-                    });
-                },
-                ajaxByTotalSales() {
-                    $.ajax({
-                        url: "/api/sales/total/sales?date_start=" + this.dateStart +
-                            "&date_end=" + this.dateEnd +
-                            "&payments_form=" + this.payments_form +
-                            "&user=" + this.selectUser.val(),
-                        type: 'GET',
-                        success: (e) => {
-                            this.total_vendas.text(e[0].total);
-                        }
-                    });
-                },
-                ajaxByTotalClients() {
-                    $.ajax({
-                        url: "/api/sales/total/clients?date_start=" + this.dateStart +
-                            "&date_end=" + this.dateEnd +
-                            "&payments_form=" + this.payments_form +
-                            "&user=" + this.selectUser.val(),
-                        type: 'GET',
-                        success: (e) => {
-                            this.total_clientes.text(e[0].total);
+                            this.renderDataLocation(e[0],0);
+                            this.renderDataLocation(e[1],1);
+                            this.renderDataLocation(e[2],2);
+                            this.renderDataLocation(e[3],3);
+                            this.chartPorLocalizacao(e);
                         }
                     });
                 },
@@ -663,46 +539,15 @@
                         complete: (e) => {}
                     });
                 },
-                ajaxApiSalesTotalPayment() {
-                    $.ajax({
-                        url: "/api/sales/total/payment?date_start=" + this.dateStart +
-                            "&date_end=" + this.dateEnd +
-                            "&payments_form=" + this.payments_form +
-                            "&user=" + this.selectUser.val(),
-                        type: 'GET',
-                        success: (object) => {
-                            this.chartMeiosPagamentos(object);
-                        },
-                        complete: (e) => {
-
-                        }
-                    });
-                },
-                getMoneyByDateAndStatusInterval() {
-                    this.url = "/api/all_sales?date_start=" + this.dateStart +
-                        "&date_end=" + this.dateEnd +
-                        "&payments_form=" + this.payments_form +
-                        "&user=" + this.selectUser.val();
-                    this.ajaxByDateAndStatus();
-                },
-                getMoneyOfYear() {
-                    this.ajaxTotalValue();
-                },
                 getUsers() {
                     this.url = "/api/franqueados";
                     this.ajaxGetUsers();
                 },
                 init() {
-                    this.getMoneyByDateAndStatusInterval();
-                    this.getMoneyOfYear();
                     this.ajaxGetPaymentsForm();
                     this.getUsers();
                     this.clickInInterval();
-                    this.ajaxMediumTicket();
-                    this.ajaxApiSalesTotalPayment();
-                    this.ajaxByStatus();
-                    this.ajaxByTotalClients();
-                    this.ajaxByTotalSales();
+                    this.ajaxByLocalizacao();
                 }
 
             };

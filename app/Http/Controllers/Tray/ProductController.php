@@ -21,4 +21,10 @@ class ProductController extends Controller
         dd($products);
     }
 
+    public function getSpecific($id) : array
+    {
+        $products = $this->tray->get("products/{$id}");
+        dd($products);
+    }
+
 }

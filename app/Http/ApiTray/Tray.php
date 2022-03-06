@@ -12,7 +12,9 @@ class Tray
     public function post(string $url, array $data): string
     {
         try {
-            $response = Http::post(env('CONSUMER_TRAY_URI') . $url, $data);
+            $token = $this->retryTokenDatabase();
+            $token = $token['access_token'];
+            $response = Http::post(env('CONSUMER_TRAY_URI') . $url . '?access_token=' . $token, $data);
             return $response;
         } catch (\Exception $exception) {
             return responseHTTP(500, $exception->getMessage());
@@ -31,7 +33,34 @@ class Tray
             }
             return $response;
         } catch (\Exception $exception) {
-            dd($exception);
+            return responseHTTP(500, $exception->getMessage());
+        }
+    }
+
+    public function delete(string $url, string $params = ''): array
+    {
+        try {
+            $token = $this->retryTokenDatabase();
+            $token = $token['access_token'];
+            $response = Http::delete(env('CONSUMER_TRAY_URI') . '/' . $url . '?access_token=' . $token . $params);
+            $response = json_decode($response, true);
+            if (isset($response['code']) and $response['code'] === 401 and $response['error_code'] === 1000) {
+                (new CreateRefreshTokenServices($this))->get();
+            }
+            return $response;
+        } catch (\Exception $exception) {
+            return responseHTTP(500, $exception->getMessage());
+        }
+    }
+
+    public function update(string $url, array $data): string
+    {
+        try {
+            $token = $this->retryTokenDatabase();
+            $token = $token['access_token'];
+            $response = Http::put(env('CONSUMER_TRAY_URI') . $url . '?access_token=' . $token, $data);
+            return $response;
+        } catch (\Exception $exception) {
             return responseHTTP(500, $exception->getMessage());
         }
     }

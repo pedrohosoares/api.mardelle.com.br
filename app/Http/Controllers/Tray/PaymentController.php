@@ -16,7 +16,7 @@ class PaymentController extends Controller
         $this->tray = new $tray;
     }
 
-    public function get(string $paymentId = '') : array
+    public function get(string $paymentId = '')
     {
         $payments = $this->tray->get('/payments/'.$paymentId);
     }

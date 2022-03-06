@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\FranqueadoController;
 use App\Http\Controllers\Api\MoneyController;
 use App\Http\Controllers\Api\OrderController as ApiOrderController;
+use App\Http\Controllers\Api\PaymentFranchiseeController;
 use App\Http\Controllers\Api\SaleController as ApiSaleController;
 use App\Http\Controllers\Dashboard\DashBoardController;
 use App\Http\Controllers\Dashboard\SaleController as DashboardSaleController;
@@ -42,10 +43,14 @@ Route::prefix('api')->group(function () {
     Route::get('total_by_interval', [MoneyController::class, 'totalByInterval']);
     Route::get('total_by_payment_interval', [MoneyController::class, 'totalByPaymentInterval']);
     Route::get('order_by_status', [ApiOrderController::class, 'orderByStatus']);
+    Route::get('/mapsales/{order_id?}', [ApiOrderController::class, 'mapsales']);
+
 
     //Total
     Route::get('sales/total/payment',[ApiSaleController::class,'salesByPaymentForm']);
     Route::get('sales/total/status',[ApiSaleController::class,'salesByStatus']);
+    Route::get('sales/total/clients',[ApiSaleController::class,'salesByTotalClients']);
+    Route::get('sales/total/sales',[ApiSaleController::class,'salesByTotal']);
 });
 
 Route::prefix('tray')->group(function () {
@@ -91,6 +96,8 @@ Route::group(['prefix' => 'admin'], function () {
     /** Page view Sale */
     Route::get('/sales', [DashboardSaleController::class, 'get']);
     Route::get('/show', [DashboardSaleController::class, 'show']);
+    Route::get('/mapsales', [DashboardSaleController::class, 'mapsales']);
+    Route::get('/payment_franchisee', [PaymentFranchiseeController::class, 'get']);
 
     /** Dashboard */
     Route::get('/dashboard', [DashBoardController::class, 'index']);

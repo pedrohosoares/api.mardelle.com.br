@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tray;
 use App\Http\ApiTray\Tray;
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
+use App\Models\Tray\Affiliate;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
@@ -14,6 +15,8 @@ class NotificationController extends Controller
     {
         $this->save($request->all());
         $this->order = (new OrderController($tray));
+        $this->productSold = (new ProductSoldController($tray));
+        $this->product = (new ProductController($tray));
     }
 
     public function save(array $data): void
@@ -36,30 +39,38 @@ class NotificationController extends Controller
 
     protected function processNotification(object $notification): void
     {
-        $json = json_decode($notification->json, true);
         $orderIDOrproductID = $notification->scope_id;
-        switch ($notification->scope_name . "_" . $notification->act) {
-            case "product_insert":
-                // Tratamento da atualização produto
-                break;
-            case "product_update":
-                // Tratamento da atualização do produto
-            case "variant_stock_update":
-                // Tratamento da atualização de estoque de uma variação de produto
-                break;
+        switch ($notification->scope_name . "_" . $notification->act)
+        {
             case "order_insert":
-                // Tratamento da insersão de um novo pedido
                 $order = $this->order->getSpecificOrder($orderIDOrproductID);
+                $order['Order']['user_id'] = '';
+                $affiliate = Affiliate::select(['user_id'])->where('id_external',$order['Order']['partner_id'])->first();
+                if(!empty($affiliate)){
+                    $order['Order']['user_id'] = $affiliate['user_id'];
+                }
                 $this->order->saveOrder($order);
+                $this->delete($notification->id);
                 break;
             case "order_update":
-                // Tratamento da insersão de um novo pedido
                 $order = $this->order->getSpecificOrder($orderIDOrproductID);
+                $order['Order']['user_id'] = '';
+                $affiliate = Affiliate::select(['user_id'])->where('id_external',$order['Order']['partner_id'])->first();
+                if(!empty($affiliate)){
+                    $order['Order']['user_id'] = $affiliate['user_id'];
+                }
                 $this->order->saveOrder($order);
+                $this->delete($notification->id);
                 break;
-            case "customer_delete":
-                // Tratamento da exclusão de um cliente
-                break;
+        }
+    }
+
+    public function delete(int $id) : void
+    {
+        try {
+            Notification::find($id)->delete();
+        } catch (\Throwable $th) {
+            //throw $th;
         }
     }
 }

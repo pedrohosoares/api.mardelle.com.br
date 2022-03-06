@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAffiliatesTable extends Migration
+class AlterTableTrayothersAddUserId extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,8 @@ class CreateAffiliatesTable extends Migration
      */
     public function up()
     {
-        Schema::create('affiliates', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('id_external',false)->index();
-            $table->string('name')->index();
-            $table->string('site');
-            $table->decimal('commission',10,2);
+        Schema::table('trayothers', function (Blueprint $table) {
             $table->bigInteger('user_id',false,true)->index();
-            $table->timestamps();
         });
     }
 
@@ -31,6 +25,6 @@ class CreateAffiliatesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('affiliates');
+        //
     }
 }

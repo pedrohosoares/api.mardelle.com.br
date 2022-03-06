@@ -20,6 +20,9 @@ class User extends \TCG\Voyager\Models\User
         'name',
         'email',
         'password',
+        'role_id',
+        'settings',
+        'porcentage_gain'
     ];
 
     public const FRANQUEADO = '2';
