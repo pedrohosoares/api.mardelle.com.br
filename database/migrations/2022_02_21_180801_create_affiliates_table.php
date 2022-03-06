@@ -19,7 +19,7 @@ class CreateAffiliatesTable extends Migration
             $table->string('name')->index();
             $table->string('site');
             $table->decimal('commission',10,2);
-            $table->bigInteger('user_id',false,true)->index();
+            $table->bigInteger('user_id',false,true)->index()->nullable();
             $table->timestamps();
         });
     }
