@@ -44,7 +44,6 @@ class NotificationController extends Controller
         {
             case "order_insert":
                 $order = $this->order->getSpecificOrder($orderIDOrproductID);
-                $order['Order']['user_id'] = '99999';
                 $affiliate = Affiliate::select(['user_id'])->where('id_external',$order['Order']['partner_id'])->first();
                 if(!empty($affiliate)){
                     $order['Order']['user_id'] = $affiliate['user_id'];
@@ -54,7 +53,6 @@ class NotificationController extends Controller
                 break;
             case "order_update":
                 $order = $this->order->getSpecificOrder($orderIDOrproductID);
-                $order['Order']['user_id'] = '';
                 $affiliate = Affiliate::select(['user_id'])->where('id_external',$order['Order']['partner_id'])->first();
                 if(!empty($affiliate)){
                     $order['Order']['user_id'] = $affiliate['user_id'];
