@@ -3,7 +3,7 @@ namespace App\Http\Support;
 
 class TrayortherSupport
 {
-    public static function putZeroValueInResultNull(string $value)
+    public static function putZeroValueInResultNull($value)
     {
         if($value == null or $value == 'null')
         {
