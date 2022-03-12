@@ -72,7 +72,7 @@ class User extends \TCG\Voyager\Models\User
         $query = $query->get()->toArray();
         if(getUserLoggedIsAdmin()){
             $query[] = array('id'=>'','name'=>'Todos franqueados','email'=>'Todos franqueados','porcentage_gain'=>'0.00');
-            $query[] = array('id'=>'no','name'=>'Nenhum franqueado','email'=>'Nenhum franqueado','porcentage_gain'=>'30.00');
+            $query[] = array('id'=>'no','name'=>'Nenhum franqueado','email'=>'Nenhum franqueado','porcentage_gain'=>'0.00');
         }
         return $query;
     }
