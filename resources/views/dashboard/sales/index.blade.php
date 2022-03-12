@@ -454,7 +454,7 @@
                         },
                         axisY: {
                             title: "Vendas em R$",
-                            valueFormatString: "#0,,.",
+                            valueFormatString: "###.##",
                             suffix: "mn",
                             prefix: "R$",
                         },
@@ -462,7 +462,7 @@
                             type: "splineArea",
                             color: "rgba(54,158,173,.7)",
                             markerSize: 5,
-                            yValueFormatString: "R$#,##0.##",
+                            yValueFormatString: "R$###.##",
                             dataPoints: this.dataPoints
                         }]
                     });
@@ -601,7 +601,7 @@
                             object.forEach(function(v, i) {
                                 soares_sales.dataPoints.push({
                                     x: new Date(v.date),
-                                    y: parseInt(v.total.replace('.', ''))
+                                    y: parseInt(v.total)
                                 })
                             });
                         },
