@@ -318,12 +318,20 @@
                             <div class="row">
                                 <div class="card text-center col-md-3">
                                     <p>Valor total</p>
+                                    <span>
+                                        <span>Comissão:</span><br />
+                                        <span id="comissionTotal">R$0,00</span>
+                                    </span>
                                     <h3 style="padding-left:20px;">
                                         <span id="totalValue">0</span>
                                     </h3>
                                 </div>
                                 <div class="card text-center col-md-3">
                                     <p>Ticket médio</p>
+                                    <span>
+                                        <span>Comissão:</span><br />
+                                        <span id="comissionTicketMedium">R$0,00</span>
+                                    </span>
                                     <h3 style="padding-left:20px;">
                                         <span id="mediumValue">R$0,00</span>
                                     </h3>
@@ -413,6 +421,13 @@
                 status_pagamentos: 'status_pagamentos',
                 total_clientes: $('#total_clientes'),
                 total_vendas: $('#total_vendas'),
+                comissionTotal: $('#comissionTotal'),
+                comissionTicketMedium: $('#comissionTicketMedium'),
+                userPorcentage(){
+                    return parseFloat(
+                        $('#selectUser option[value="'+this.getUser+'"]').attr('data-porcentage')
+                    );
+                },
                 months() {
                     let start = new Date(this.dateStart);
                     start.setDate(start.getDate() + 1);
@@ -554,6 +569,9 @@
                             "&user=" + this.user,
                         type: 'GET',
                         success: (e) => {
+                            let valuePorcentage = parseFloat(e[0].total) * (this.userPorcentage() / 100);
+                            valuePorcentage = "R$" + valuePorcentage.toFixed(2).replace('.', ',');
+                            this.comissionTotal.text(valuePorcentage);
                             e = "R$" + parseFloat(e[0].total).toFixed(2).replace('.', ',');
                             this.totalValue.text(e);
                         }
@@ -567,6 +585,9 @@
                             "&user=" + this.user,
                         type: 'GET',
                         success: (e) => {
+                            let valuePorcentage = parseFloat(e[0].total) * (this.userPorcentage() / 100);
+                            valuePorcentage = "R$" + valuePorcentage.toFixed(2).replace('.', ',');
+                            this.comissionTicketMedium.text(valuePorcentage);
                             e = "R$" + parseFloat(e[0].total).toFixed(2).replace('.', ',');
                             this.mediumValue.text(e);
                         }
@@ -635,11 +656,11 @@
                             let html = '';
                             for (const key in e) {
                                 if (soares_sales.getUser == e[key].id) {
-                                    html += '<option selected value="' + e[key].id + '">' + e[key]
+                                    html += '<option selected data-porcentage="'+e[key].porcentage_gain+'" value="' + e[key].id + '">' + e[key]
                                         .email +
                                         '</option>';
                                 } else {
-                                    html += '<option value="' + e[key].id + '">' + e[key].email +
+                                    html += '<option data-porcentage="'+e[key].porcentage_gain+'" value="' + e[key].id + '">' + e[key].email +
                                         '</option>';
                                 }
                             }
@@ -701,10 +722,10 @@
                     this.ajaxGetUsers();
                 },
                 init() {
+                    this.getUsers();
                     this.getMoneyByDateAndStatusInterval();
                     this.getMoneyOfYear();
                     this.ajaxGetPaymentsForm();
-                    this.getUsers();
                     this.clickInInterval();
                     this.ajaxMediumTicket();
                     this.ajaxApiSalesTotalPayment();

@@ -63,7 +63,7 @@ class User extends \TCG\Voyager\Models\User
 
     public function scopeRetrieveMailAndIdFranqueado(object $query) : array
     {
-        $query = $query->select(['id','name','email']);
+        $query = $query->select(['id','name','email','porcentage_gain']);
         if(getUserLoggedIsAdmin()){
             $query = $query->where('role_id',self::FRANQUEADO);
         }else{
@@ -71,8 +71,8 @@ class User extends \TCG\Voyager\Models\User
         }
         $query = $query->get()->toArray();
         if(getUserLoggedIsAdmin()){
-            $query[] = array('id'=>'','name'=>'Todos franqueados','email'=>'Todos franqueados');
-            $query[] = array('id'=>'no','name'=>'Nenhum franqueado','email'=>'Nenhum franqueado');
+            $query[] = array('id'=>'','name'=>'Todos franqueados','email'=>'Todos franqueados','porcentage_gain'=>'0.00');
+            $query[] = array('id'=>'no','name'=>'Nenhum franqueado','email'=>'Nenhum franqueado','porcentage_gain'=>'30.00');
         }
         return $query;
     }
