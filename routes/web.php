@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\PaymentFranchiseeController;
 use App\Http\Controllers\Api\SaleController as ApiSaleController;
 use App\Http\Controllers\Dashboard\DashBoardController;
 use App\Http\Controllers\Dashboard\SaleController as DashboardSaleController;
+use App\Http\Controllers\Franqueado\FranqueadoController as FranqueadoFranqueadoController;
 use App\Http\Controllers\Tray\AffiliateController;
 use App\Http\Controllers\Tray\CustomerController;
 use App\Http\Controllers\Tray\NotificationController;
@@ -102,4 +103,12 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('/dashboard', [DashBoardController::class, 'index']);
 
     Voyager::routes();
+});
+
+Route::group(['prefix' => 'franqueado'], function () {
+
+    /** Page view franqueados links */
+    Route::get('/{slug}', [FranqueadoFranqueadoController::class, 'index']);
+
+
 });
