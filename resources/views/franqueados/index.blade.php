@@ -21,7 +21,7 @@
     </style>
     <iframe src="https://mardelle.com.br"></iframe>
     <script>
-
+        document.domain = 'mardelle.com.br';
         const iframeDOM = {
             site: '',
             parametersLinks: "parceiro={{ $afiliate->id_external }}",
