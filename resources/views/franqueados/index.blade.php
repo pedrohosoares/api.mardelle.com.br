@@ -19,7 +19,7 @@
             height: 100%;
         }
     </style>
-    <iframe src="https://mardelle.com.br"></iframe>
+    <iframe src="https://mardelle.com.br?parceiro={{ $afiliate->id_external }}"></iframe>
     <script>
         document.domain = 'mardelle.com.br';
         const iframeDOM = {
