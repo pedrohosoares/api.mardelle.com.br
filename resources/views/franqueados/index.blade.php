@@ -28,6 +28,7 @@
             iframe() {
                 return document.querySelector('iframe');
             },
+
             putUrlInLinks() {
                 const allLinks = this.site.querySelectorAll('a');
                 allLinks.forEach((link) => {
