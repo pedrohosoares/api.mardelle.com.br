@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\MoneyController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Tray\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,3 +16,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/request', [NotificationController::class, 'save']);

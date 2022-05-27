@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::get('/request/read', [NotificationController::class, 'read']);
-Route::post('/request', [NotificationController::class, 'save']);
+Route::post('/request', [NotificationController::class, 'save'])->name('data_request');
 
 Route::prefix('api')->group(function () {
     Route::get('total/payments',[ApiSaleController::class,'getOrdersByUserTotalSale']);

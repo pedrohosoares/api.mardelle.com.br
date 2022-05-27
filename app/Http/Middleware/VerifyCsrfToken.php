@@ -12,6 +12,8 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'request',
+        'http://localhost:8000/request',
+        'https://app.mardelle.com.br/request'
     ];
 }

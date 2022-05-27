@@ -13,6 +13,9 @@ class NotificationController extends Controller
 
     public function __construct(Request $request, Tray $tray)
     {
+        if(empty($request->all())){
+            exit;
+        }
         $this->save($request->all());
         $this->order = (new OrderController($tray));
         $this->productSold = (new ProductSoldController($tray));
